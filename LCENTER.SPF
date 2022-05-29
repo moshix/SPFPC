@@ -1,0 +1,17 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     CENTER
+ PURPOSE:   Center the line at the cursor line with the margins
+            defined by the BNDS definition.
+**********************************************************************/
+
+'isredit macro'
+
+'isredit (LMARGIN, RMARGIN) = bounds'           /* retrieve margins */
+'isredit (READLINE, COLNUM) = cursor'           /* find cursor pos */
+'isredit (CLINE) = line 'READLINE               /* read current line */
+CLINE = center(strip(CLINE), RMARGIN-LMARGIN+1) /* center it */
+'isredit line 'READLINE' = "'CLINE'"'           /* write it */
+exit
+

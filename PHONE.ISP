@@ -1,0 +1,254 @@
+/*-------------------------------------------------------------------*/
+/* PROGRAM:     PHONE.ISP                                            */
+/* BY:          Command Technology Corp                              */
+/* ENVIRONMENT: SPF/PC Version 4.0                                   */
+/* DATE:        April, 1994                                          */
+/*-------------------------------------------------------------------*/
+/* (C) Copyright 1984-1994, Command Technology Corporation.          */
+/*     All Rights Reserved.                                          */
+/*-------------------------------------------------------------------*/
+
+/*----------------------------*/
+/* temporary tracing facility */
+/*----------------------------*/
+address ispexec
+
+namelist = "fname lname company addr city state zip phonew phoneh phonef"
+
+/*---------------------------------------------------*/
+/* special command variables used by dialog services */
+/*---------------------------------------------------*/
+zcmd     = ""
+zverb    = ""
+ztdsels  = 0
+
+/*-------------------------------------------------------------      */
+/* make sure that an aborted ISP call from before gets its table closed */
+/*-------------------------------------------------------------      */
+'tbclose phonelst'
+
+/*---------------*/
+/* open up table */
+/*---------------*/
+'tbopen phonelst'
+select
+   when (rc==8) then
+      do
+
+         /*------------------------------------------*/
+         /* table does not exist -- try to create it */
+         /*------------------------------------------*/
+         'tbcreate phonelst names(' namelist ')'
+         if (rc>4) then do
+            /*-----------------------------*/
+            /* couldn't create it -- ABORT */
+            /*-----------------------------*/
+            zpdfmsg1 = "PHONELST TABLE"
+            'setmsg msg(isre103)'
+            return 20
+         end
+
+         fname    = "Joe"
+         lname    = "Salesperson"
+         company  = "CTC"
+         addr     = "1040 Marina Village Pkwy"
+         city     = "Alameda"
+         state    = "CA"
+         zip      = "94501"
+         phonew   = "800-336-3320"
+         phoneh   = "510-521-5900"
+         phonef   = "510-521-0369"
+         'tbadd phonelst'
+
+      end
+   when (rc>8) then
+      do
+         /*----------------------------*/
+         /* error opening file at all! */
+         /*----------------------------*/
+         zpdfmsg1 = "PHONELST TABLE"
+         'setmsg msg(isre103)'
+         return 20
+      end
+   otherwise
+      nop
+end
+
+'tbsort phonelst fields( lname,c,a )'
+'tbdispl phonelst panel(phonemnu)'
+if (rc<8) then
+   do
+      do while (rc<8)
+         zcmd = translate(zcmd)
+
+         if (zcmd \= "") then do
+            select
+               when (zcmd="ADD") then
+                  do
+                     call phoneadd
+                  end
+               when (zcmd="FIND") then
+                  do
+                     call phonefind
+                  end
+               when (zcmd="SORT") then
+                  do
+                     call phonesort
+                  end
+
+               otherwise
+                  'setmsg msg(ispf102)'
+
+            end
+         end
+
+         /*-----------------------------------------------*/
+         /* cycle though and handle all the line commands */
+         /*-----------------------------------------------*/
+         if (ztdsels>0) then do
+            do while (ztdsels>1)
+               call phonesel
+               'tbdispl phonelst'
+            end
+            call phonesel
+         end
+
+         /*--------------------*/
+         /* display list again */
+         /*--------------------*/
+         'tbdispl phonelst panel(phonemnu)'
+
+      end
+   end
+else
+   if (rc>8) then
+      say "Fatal error displaying PHONEMNU.PAN"
+
+
+'tbclose phonelst'
+return 0
+
+/*--------------------------------------------------------*/
+/* clear the existing variables and add the edited result */
+/*--------------------------------------------------------*/
+phoneadd: procedure expose fname lname company addr city state zip phonew phoneh zcmd
+
+/*---------------------*/
+/* erase the variables */
+/*---------------------*/
+'tbvclear phonelst'
+
+phonevrb = "ADD"
+'display panel(phonemod)'
+do while (rc<8)
+   'display'
+end
+
+if (translate(zcmd)\="CAN") then
+   do
+      'tbadd phonelst order'
+   end
+
+return
+
+phonesort: procedure expose fname lname company addr city state zip phonew phoneh phonef zcmd
+
+'setmsg msg(ispf105)'
+
+return
+
+phonefind: procedure expose fname lname company addr city state zip phonew phoneh phonef zcmd
+
+'setmsg msg(ispf105)'
+
+return
+
+/*-----------------------------------------*/
+/* clear the variables and search for them */
+/*-----------------------------------------*/
+/*---------------------*/
+/* erase the variables */
+/*---------------------*/
+'tbvclear phonelst'
+
+phonevrb = "SEARCH FOR"
+'display panel(phonemod)'
+do while (rc<8)
+   'display'
+end
+
+if (translate(zcmd)\="CAN") then
+   do
+      'tbadd phonelst order'
+   end
+
+return
+
+/*-----------------------------------------*/
+/* edit the existing record and put result */
+/*-----------------------------------------*/
+phonemod: procedure expose fname lname company addr city state zip phonew phoneh phonef zcmd
+
+phonevrb = "EDIT"
+'display panel(phonemod)'
+do while (rc<8)
+   'display'
+end
+
+if (translate(zcmd)\="CAN") then
+   do
+      'tbput phonelst order'
+   end
+
+return
+
+/*-----------------------------------------*/
+/* edit the existing record and add result */
+/*-----------------------------------------*/
+phonecpy: procedure expose fname lname company addr city state zip phonew phoneh phonef zcmd
+
+phonevrb = "COPY"
+'display panel(phonemod)'
+do while (rc<8)
+   'display'
+end
+
+if (translate(zcmd)\="CAN") then
+   do
+      'tbadd phonelst order'
+   end
+
+return
+
+/*-------------------------------------------------*/
+/* handle line command fields off of table display */
+/*-------------------------------------------------*/
+phonesel: procedure expose sel fname lname company addr city state zip phonew phoneh phonef zcmd
+
+sel = translate(sel)
+select
+   when (sel="E") then
+      do
+         call phonemod
+      end
+   when (sel="S") then
+      do
+         call phonemod
+      end
+   when (sel="C") then
+      do
+         call phonecpy
+      end
+   when (sel="D") then
+      do
+         'tbdelete phonelst'
+      end
+
+   otherwise
+      'setmsg msg(ISPF102)'
+
+end
+
+return
+
+

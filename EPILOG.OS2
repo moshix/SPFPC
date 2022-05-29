@@ -1,0 +1,24 @@
+|             ษออออออออออออออออออออออออออออออออออออออออออออป
+|             บ SPF/PC Version 4.0 successfully installed! บ
+|             ศออออออออออออออออออออออออออออออออออออออออออออผ
+
+    To execute from OS/2 or Windows NT, go to the Target Directory
+    and type:
+
+       SPF2   - Edit macro support via IBM's REXX DLL
+
+    or select the CTC SPF/PC Bridge Icon from the Presentation
+    Manager Group menu selected.
+
+    If you chose to install DOS files as well as OS/2 type
+    the following from a DOS command prompt:
+
+       SPFPC  - SPF/PC Version 4.0
+
+    If you selected to make changes to the CONFIG.SYS file, please
+    restart your machine to have those changes take effect.
+
+    If you would like a printout of the earlier installation text, type:
+
+        COPY A:\INSTALL.OS2 PRN
+

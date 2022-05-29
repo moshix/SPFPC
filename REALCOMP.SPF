@@ -1,0 +1,114 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     REALCOMP - Realia COBOL 4.0 Compile Macro
+
+ PURPOSE:   Compile the program currently being edited and display
+            any errors that are found.
+
+ SIDE       If error messages are found, sets Alt-F5 key to
+ EFFECT:    LOCATE SPECIAL so that the user can use that key
+            to jump between all the error messages found by the
+            compiler.  Will not modify the key setting if it has
+            been changed from its default.
+
+            ISPEXEC SHORT and LONG messages are modified to reflect
+            outcome of compile.
+
+ OPERATION: COMPILE starts the Realia Cobol compiler and
+            causes the output to be sent to the file
+            "compile.out".  Then, it reads the contents of
+            "compile.out" looking for errors associated with the
+            current source file.  If any are found, the first
+            error for each line is displayed as a MSG line
+            following the line with the error.
+
+ NOTE:      Uses function calls made available in SPF/PC Version 2.0.
+            Will not work on 1.0.
+
+***********************************************************************/
+/* Macro to compile the current file using "COBOL" */
+
+'ISREDIT MACRO(PARMS)'
+trace off
+
+/* Get rid of previous error lines */
+'ISREDIT RESET SPECIAL'
+
+/* If source has not been saved, save it */
+'ISREDIT (modified) = DATA_CHANGED'
+if (modified=YES) then
+  'ISREDIT SAVE'
+
+/* Retrieve filename information about source file */
+'ISREDIT (filename) = DATASET'
+filename = TRANSLATE(filename)
+
+ADDRESS CMD 'REALCOB ' filename ' ,,; 1>compile.out'
+
+quote     = "'"
+quotes    = quote || '"'
+found_one = 0
+
+/* Continue reading until you run into the line for Pass 2.a */
+DO WHILE LINES('COMPILE.OUT') > 0
+   dataline1 = LINEIN('COMPILE.OUT')
+   if (pos("PASS 2A", translate(dataline1))>0) then
+     leave
+END
+
+/* Read remaining lines */
+IF LINES('COMPILE.OUT') then
+  DO WHILE LINES('COMPILE.OUT') > 0
+
+    dataline1 = LINEIN('COMPILE.OUT')
+    dataline  = translate(dataline1,'`',quotes)
+
+    /* if the dataline contains the word "PASS 3", then get out */
+    if (pos(" PASS 3", translate(dataline))>0) then
+      leave
+
+    PARSE VAR dataline lineno errmode errline
+    /* if the firstword is the source code filename, then exit */
+    if (pos(translate(lineno), filename)>0) then
+      leave
+
+    found_one = 1
+    if (length(strip(left(dataline,5)))=0) then
+      do
+        errline = strip(dataline)
+        'ISREDIT LINE_BEFORE ' lastline '= MSGLINE "'errline'"'
+      end
+    else
+      do
+        if (lineno = lastline) then
+          iterate
+        'ISREDIT LINE_BEFORE ' lineno '= MSGLINE "'errline'"'
+        lastline  = lineno
+      end
+  END
+
+/* Display appropriate error/macro done messages */
+if found_one then
+  do
+    'ISREDIT LOCATE FIRST SPECIAL'
+
+    ZEDSMSG = "COMPILE ERRORS ENCOUNTERED"
+    ZEDLMSG = "SYNTAX ERRORS DISCOVERED DURING COMPILE.  SEE INSERTED NOTES"
+
+    /* If ALT-F5 is still set to RFIND, then change it to LOCATE SPEC */
+    'ISPEXEC VGET ZPF41'
+    if (ZPF41=RFIND) then
+      do
+        ZPF41 = "LOCATE SPECIAL"
+        'ISPEXEC VPUT ZPF41'
+      end
+  end
+else
+  do
+    ZEDSMSG = "COMPILE SUCCESSFUL"
+    ZEDLMSG = "COMPILER FOUND NO SYNTAX ERRORS DURING COMPILE."
+  end
+
+'ISPEXEC SETMSG MSG(ISRZ000)'
+

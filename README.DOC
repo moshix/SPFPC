@@ -1,0 +1,642 @@
+***********************************************************************
+
+FILE:     README.DOC
+
+PRODUCT:  SPF/PC
+
+VERSION:  4.0
+
+BY:       Command Technology Corporation
+
+CONTENTS: General information about SPF/PC Version 4.0
+
+***********************************************************************
+
+* The following notes concern SPF/PC Version 4.0 in general.  More
+  specific information concerning either DOS or OS2 can be found in
+  README.DOS and README.OS2 respectively.  Specific notes on ISREDIT
+  macro execution and ISPEXEC command procedures may be found in
+  README.MAC.
+
+* How to get Technical Support:
+
+   - By phone, call (510) 521-5900 from 8:00 to 4:30 Pacific Time.
+   - By fax, call (510) 521-0369, 24 hours a day.
+   - By modem, call our BBS at (510) 769-6826.
+
+* At startup, SPF/PC Version 4.0 performs the following search to find
+  the location of its global profile, SPFPC40.GBL:
+
+    - If a environmental variable named SPF4PATH or SPFPATH (we
+      look for SPF4PATH first) exists, it looks there first.
+    - It next searches the PROFILES subdirectory off of the
+      executable directory.
+    - It next searches the executable directory.
+    - It next searches the current directory.
+
+  Once the GBL global profile is found, it uses the settings stored
+  within (and set on Panel 0.8) to locate all other files, including:
+
+    - Panels,
+    - Messages,
+    - Profiles,
+    - Macros,
+    - Command Procedures.
+
+  SPF/PC Version 4.0 no longer supports the SPF2PATH environmental
+  variable, which was used in earlier versions to find profile
+  information.  If you are using it, change it to SPFPATH.
+
+  If you need to use an environmental variable to find the GBL file,
+  (in most cases you don't, especially if you have followed the
+  default installation configuration), we recommend that you use
+  the SPFPATH variable.  However, if you are running verions 3.0
+  and 4.0 simulteneously, use the SPFPATH variable to indicate
+  the location of Version 3.0 profiles, and SPF4PATH for the
+  location of Version 4.0 profiles.
+
+* SPF/PC Version 4.0, by default, keeps its profile information
+  in the PROFILES subdirectory underneath the installation directory.
+  For example, if you installed into C:\SPFPC40, the profile
+  information is stored in C:\SPFPC40\PROFILES.
+
+  If you need to use the SPFPATH variable to point at the profile
+  information, set it to point to the PROFILES directory as well.
+  In the above example, you would use "SET SPFPATH=C:\SPFPC40\PROFILES".
+
+* If you have one of the following prior releases:
+
+   SPF/2 v 2.0, SPF/PC v 3.0, or SPF/PC v 4.0
+
+  You can make sure that your profiles from those installations are
+  moved over into your new release by performing the following
+  command from the DOS or OS/2 command prompt:
+
+   PRFUPGRD <old_prf_location> <new_prf_location>
+
+  So, if you had SPF/PC v 3.0 installed in C:\SPFPC30, and you just
+  installed SPF/PC v 4.0 into C:\SPFPC40 directory, issue the following
+  command:
+
+   C:\SPFPC40\PRFUPGRD c:\spfpc30 c:\spfpc40\profiles
+
+  which should update and copy all the profiles over.
+
+  If you have installed Version 4.0 over an existing installation,
+  then perform:
+
+   C:\SPFPC\PRFUPGRD c:\spfpc c:\spfpc
+
+  and all the profiles will be upgraded, and backups of any file
+  that gets modified will be made.
+
+* PFSHOW Buttons are on by default; this is so we can show off the
+  ability to "double click" the buttons to perform PFKey functions
+  with the mouse.  However, if you want the space back for editing,
+  use the PFSHOW OFF command.
+
+  If you are using 50 or 60 line mode, you may want to tell SPF to
+  display even more rows than the default 2 -- use the PFSHOW 4
+  command to display 4.  If you change the PFSHOW setting to show
+  3 lines, it will show the default Mouse Selection "S" commands,
+  which are assigned by default to the Shift PF Keys.
+
+* Tips regarding modifying distribution panels:
+
+   - If you want to modify one of the panels we distribute with Version
+     4.0, copy it to a new directory, and reflect the location of that
+     directory in your Panel 0.8 CUSTOM Panel search path.
+
+     Change the panel in the CUSTOM directory.  Then, if you receive an
+     update from us, we can overwrite all the panels in the PAN
+     directory, and your customized panels will not be touched.
+
+   - The primary option panel is named "S2MPRIM.PAN".  All other
+     panels are referenced through it and the functions it calls.
+
+   - You can select alternative startup panels using the /S command
+     line switch.  See the Documentation for more details.
+
+* SPF/PC's editor memory requirements are dependent to the MAXIMUM
+  RECORD LENGTH field set on Panel 0.5.  By default, Version 4.0 is
+  shipped with it set to 4096.  This means that regardless of the
+  settings in the specific profile, or the width found within the file
+  being editing, the maximum record length cannot exceed the MAXIMUM
+  RECORD LENGTH value.
+
+  If you increase the value, then SPF/PC must anticipate wider and wider
+  files, which its internal buffers used to keep track of changed
+  records.  The larger the value, the more memory the editor requires
+  (even if the file in the editor is not using it).
+
+  We recommend that, unless you need to edit long records, you maintain
+  MAXIMUM RECORD LENGTH <= 4096.
+
+* SPF/PC's memory requirements during file loads are bound to the
+  MAXIMUM RECORD LENGTH of the profile that is loading the file.  During
+  the file load process, SPF/PC allocate numerous temporary buffers of
+  the same size as the maximum record length.  If the record size is
+  unnecessarily large, then extra memory is required during file load.
+
+  SPF/PC starts with a default maximum record length of 4096.  This
+  number can be increased on Panel 0.5 up to 64000 bytes.
+
+  We recommend that, unless you use long records, you maintain Maximum
+  Record Length <= 4096.
+
+* If you are having trouble editing files that you used to be able to
+  edit with SPF/PC Version 2.1, then you most likely need to change some
+  of the settings available under the Panel 0.7 Profile Controls.  For
+  example:
+
+    - SPF/PC Version 2.1 Variable length record format files are similar
+      to SPF/PC Version 4.0 Data delimited files.  However, if you were
+      using CRLF terminators under SPF/PC 2.1, it accepted both CRLF
+      pairs and lone LF characters as record terminators.
+
+      SPF/PC 4.0 CRLF terminators search only for CRLF pairs, which
+      means that if you have a record terminated with only a LF, 2.1
+      could read the file, but 4.0 would most likely display the error
+      message MAX RECORD LENGTH EXCEEDED.
+
+      SPF/PC 4.0 supports SCRLF terminators (Soft CRLF), which emulate
+      the functionality of the SPF/PC 2.1 variable length format.
+      Change the LINE TERMINATOR field on the second page of 0.7 profile
+      information to from CRLF to SCRLF.  This must be done for all
+      profiles that match the extension of the file with this style
+      record terminators.  If you use files of this nature extensively,
+      then you may want to change the DEFAULT profile settings as well.
+
+    - SPF/PC 4.0 supports Micro Focus Record Sequential Style
+      format files, that look entirely different from a standard
+      Data delimited file.  Some of the profiles that we distribute
+      with SPF/PC include settings for the Micro Focus Header format.
+
+      If you are loading a file into edit and receive the message
+      INVALID MF RECORD or HEADER, check the profile settings for
+      the file that you are loading.  Most likely, it is set to
+      RECORD FORMAT == M.
+
+* New commands not found in the hardcopy documentation:
+
+* New in Version 4.0.0
+
+  * SPLITH - Performs a horizontal split at the halfway point on the
+    screen, without regards to current cursor position.  If the
+    current screen is already split, repositions split line to mid
+    point and performs swap.  Horizontal analog to SPLITV command.
+
+  * SWAP [BACK] [<#>] - Accepts the following new parameters:
+
+      BACK - swaps backwards, in the opposite direction of the normal
+             swap order.
+      <#>  - swaps directly to the task with task id <#>
+
+  * PRINT ALL|PART [NUMBER] [X|NX]
+
+    Editor only commands to enhance printing output.  The parameters
+    are used as follows:
+
+      NUMBER -- Includes line numbers on left side of output in files
+                that are not numbered.
+      X      -- Print just the lines in the region specified that are
+                excluded.
+      NX     -- Print just the lines in the region that are not
+                excluded.
+
+  * CUT [APPEND]
+
+    Editor command that appends the currently selected to the
+    clipboard.  Unlike CUT with no parameters, which erases the
+    contents of the clipboard, and then writes the selected
+    text, CUT APPEND appends the selected text to the end,
+    accumulating additional clipboard text.
+
+  * PASTE [CLEAR]
+
+    Normally, PASTE leaves the contents of the clipboard intact
+    after each PASTE so that you can continue to paste the contents
+    again.  However, with PASTE CLEAR, the contents are removed
+    from the clipboard after pasting.
+
+  * FLIP
+
+    The editor now supports the FLIP primary command, which EXCLUDES
+    all the NON-EXCLUDED lines, and Includes the EXCLUDED lines.
+    This essentially "flips" that X_STATUS of all the lines in the
+    editor.
+
+  * HILIGHT
+
+    Editor only command -- alias for COLORMAP Syntax Colorization
+    command.
+
+  * PROFILE <prof_name>
+  * LRECL <lrecl_len>
+  * IMACRO <imacro_name>
+  * XMACRO <xmacro_name>
+  * ERRORFILE <errf_name>
+
+    File list only commands that change the default value of the
+    respective editor value for the active file list.  For example,
+    change the default PROFILE value for the current file list
+    by issuing the command:
+
+      PROFILE exe
+
+    All subsequent edits from the active file list will use
+    the "EXE" profile, as if you had entered the value on the
+    PROFILE field of panel 2.
+
+    These commands only work when the file list is generated from
+    either Panel 1 or 2, or if invoked using the EDIT or BROWSE
+    primary commands.
+
+* New in Version 4.0.1
+
+  * CMD command, which performs a select on an ISP Command Procedure
+    from the command line.  For example, to execute our PHONE.ISP
+    REXX Command Procedure from within the editor, issue the command:
+
+      CMD PHONE
+
+    The phone procedure will be executed by performing a select on
+    the command line "CMD(PHONE)"
+
+    Parameters may also be included on the command line, and they
+    are split off into a seperate argument of the select statement
+    as a PARM().
+
+  * Directory list LOCATE command has a new parameter to help it
+    locate directories as opposed to file entries.  The new LOCATE
+    syntax is:
+
+      LOCATE [DIR] [<col_name>] <col_value>
+
+    For example, to locate a FILE with the name "XYZ.PDQ", execute:
+
+      LOC xyz.pdf
+
+    or
+
+      LOC name xyz.pdf
+
+    However, to locate a DIRECTORY with the name SRC, execute:
+
+      LOC dir src
+
+  * New SPFPC command line parameter "/G", which allows you to overide
+    the search path used to find the Global Profile SPFPC40.GBL file.
+    For example, if SPF is started as follows:
+
+      SPFPC /Gc:\profiles
+
+    SPF will look in the "c:\profiles" directory to find the Global
+    profile file, regardless of the settings of SPFPATH and SPF4PATH
+    environment variables.
+
+  * New SPFTRACE environment variable that activates Trace mode without
+    extra command line parameters.  For example, by setting
+
+       SET SPFTRACE=Y
+       SPFPC
+
+    SPF/PC will echo back all the search file locations that it
+    hunts for.  This mode is particularly useful if you are running
+    the SPF/PC Micro Focus interface, which does not allow you
+    the add extra command line parameters.
+
+* Also not documented but available in Version 4.0:
+
+  Ability to specify file lists via "Set" notation, where multiple
+  directories may be scanned for specific file patterns.  For
+  example:
+
+    [C:\TEST;D:\TEST2;E:\TEST\NEW] *.c *h
+
+  would generate a list of all "*.c" and "*.h" files found the the
+  three directories "C:\TEST", "D:\TEST2", and "E:\TEST\NEW".
+
+  Dialog variables may also be specified anywhere within the file
+  specification.  For example:
+
+    [&SPFPATH] *.cbl
+
+  would search for all "*.CBL" files found in the SPFPATH variable
+  paths.
+
+  Note:  The above extended path specification formats with
+  best from the OS FILE SPECIFICATION fields of Panels 1, 2, and 3.4.
+  The can be coerced to work from other areas, such as the PROJECT
+  FILE sections of the same panels, but the usage is not as clean.
+
+* ZDSN Style Variables
+
+  The Version 4.0 ZDSN variable set which keep track of the recently
+  edited filenames now includes the following variables (in regards
+  to C:\SPFPC40\README.DOC):
+
+     ZDSN          {C:\SPFPC40\README.DOC}
+     ZDSNPATH      {C:\SPFPC40}
+     ZDSNDRV       {C:}
+     ZDSNNAME      {README.DOC}
+     ZDSNBASE      {README}
+     ZDSNEXT       {DOC}
+
+  These variable may be retrieved from within macros via the ISPEXEC
+  VGET facility, or may be expanded during FOREGROUND, DOS/OS2/TSO/CMS
+  command processing by preceding them with an "&" character.
+
+* New Mouse Capabilities
+
+  - Dragging the Split Line.  If you have a split line (horizontal
+    or vertical) displayed in your current full screen task,
+    you can hold the left mouse button down and "drag" the split
+    line to new locations.
+  - PFSHOW Selection.  The PFSHOW Buttons on the bottom of the screen
+    not only provide information as to the contents of your basic
+    PF Keys setting, but can also be "Double-Clicked" and executed,
+    just as if you had hit the real PF-Key.
+  - The scroll indicators on all tables (the little arrows at the
+    right side of the screen) can be double clicked to perform
+    scrolling within the tables.
+  - During split, you can use the mouse to change sides of the split
+    line, essentially performing a SWAP.
+
+* Command Stacking
+
+  - Unlike SPF/2 1.0, 2.0 and SPF/PC 3.0, command stacking can now
+    span over split lines, in and out of the editor, and work around
+    = commands.  For example, the command "split;2;;" should start
+    working in Panel 2 on the other side of the split that has
+    not occured yet.
+
+* Tips concerning use of the Version 4.0 keyboard manager:
+
+  * Any configurable key in the keyboard manager may be used as the
+    SPF/PC Enter key, including Enter (the normal "Return" key),
+    Enter-Ext (the Enter key on the Extended keypad), Right-Ctrl (the
+    Ctrl key on the bottom right corner of an extended keyboard), and
+    Ctrl-Enter (the combination of holding down Ctrl and "Return"
+    simultaneously).  All of these key entries may be found on the
+    EXTENDED key table on Panel 0.K.
+
+    The typical terminal signals to assign to these keys include:
+
+      * [ENTER-3270] - Performs enter processing in SPF, making all
+        active changes permanent, and executing whatever commands
+        are on the primary or line command lines.  Similar in
+        operation to the Enter key on a 3270 keyboard.
+      * [ENTER-SPFPC] - Acts like the enter key in SPF/PC Version
+        2.1, where Enter key processing occurs only if something has
+        been typed into the editor, or if you hit Enter from the
+        last field on a DM panel.  Also refered to as "Smart-Enter".
+      * [NEWLINE] - Moves the cursor down the screen to the next
+        field.  Does not perform enter key processing.
+
+  * The typical signals assigned to the Backspace key include:
+
+      * [BACKSPACE] - "Destructive Backspace," which erases the
+        character to the left of the cursor, moves the cursor there,
+        and slides all the data from the right over as well.
+      * [BACKSPACE-BLANK] - Similar to Destructive Backspace, it
+        deletes the character and moves the cursor over to the left,
+        but does not slide the data on the right over.
+      * [CURSOR-LEFT] - The non-destructive backspace, simply moves
+        the cursor over to the left.
+
+  * The typical signals assigned to the Esc key include:
+
+      * [CANCEL] - Clears the terminal entry buffer that has been
+        assumulating keystrokes since the last time you hit Enter or
+        a PFKey.  This is the default setting for the Esc under all
+        of the sample keyboard schemes distributed with Version 3.
+      * x"1A" - Associates the ASCII data character for Esc with the
+        Esc key, which was an option under SPF/PC Version 2.1.
+      * END - Performs the END command, exiting you out of any
+        panel; also, saves Edit sessions when a change has occured.
+
+  * The [DEL-END-OF-DATA] signal may be assigned to any configurable
+    key, but is typically assigned to either Ctrl End-Ext or Ctrl
+    Del-Ext.  Both of these key entries can be found in the CTRL
+    key table.
+
+  * The CURSOR command may be assigned to PF12, which evidentally is a
+    common configuration on many users 3270 setups.  However, the
+    CURSOR command performs Enter key processing, while its terminal
+    function counterpart [CURSOR] does not.  In most cases, it is
+    desirable to assign the signal [CURSOR] as opposed to the primary
+    command CURSOR.
+
+* Notes on modifying Colorization Definition Files (.CLR's)
+
+  - A new, undocumented, colorization category, SPECIAL_CHARS has
+    been added so that selected punctuation can be colorized
+    differently from normal text.  For example, use:
+
+       SPECIAL_CHARS    = "+/*-="
+
+    to colorize the arithmetic operators in your source code.
+
+    None of the special characters can be included anywhere within
+    the WORD_CLASS dictionary.  For example, if you include the
+    word "#define" in your WORD_CLASS section, you cannot include
+    the character "#" as a special character.
+
+  - String delimiters must be defined with the STRING_DELIMITERS
+    header in order for quoted character strings to be colorized.
+    For example:
+
+       STRING_DELIMITERS = '"', "'"
+
+    defines both single quote and double quoted strings to be
+    colorized.
+
+  - SPF/PC Version 4.0 does not performing any syntactical parsing
+    of your source code to determine validity!  Therefore, if
+    a word found in the WORD_COLOR classes of your CLR file is used
+    out of context, it will get colorized (unless it is found in
+    some other colorized context, like a String or a Comment).
+
+* Logical printer definition notes
+
+  * If you specify a SETUP or a RESET string that contains a file
+    to output, the file will be dumped "raw."  There will be no
+    expansion of "\027" patterns or anything.  Therefore, if you
+    need to dump an setup string from a file, imbed real Esc
+    characters into the file that gets dumped.
+
+  * Maximum COLUMNS is used to align the header and footer lines
+    only.  If you need to print text that is wider than maximum
+    columns setting, it will print -- and if your printer wraps,
+    it will wrap the text down to the next line without telling
+    us that it has done so.
+
+* Overloaded Profile Names in 4.0.2
+
+  SPF/PC will rename profiles for PRN, AUX, and CON based files
+  so that they use "_PRN", "_AUX", and "_CON" instead.  This is
+  to avoid profiles that use files names that conflict with DOS
+  device filenames (ie: in DOS, if you write to a file named
+  "PRN.PRF", like we normally would if we were handling a PRN
+  profile, you write to your printer instead).
+
+* Documentation Addendums:
+
+  The following items are not correct in the documentation, and
+  should be as follows:
+
+   In the Users Guide:
+
+     * On Page 2-9:
+
+       "COPY  \SPFPC30\EDIT.LBR"
+
+      should be:
+
+       "COPY  \SPFPC40\EDIT.LBR"
+
+     * On Page 2-13:
+
+       "...the list is saved in file PROJECT1.TBL."
+
+      should be:
+
+       "...the list is saved in file PROJECT1.TBF."
+
+     * On Page 2-15:
+
+       "Specifies line and colume number...
+
+      should be:
+
+       "Specifies line and column numbers...
+
+     * On Page 5-4:
+
+       "...OPTION case you can select an item from the menu
+       by number."
+
+      should be:
+
+       "...OPTION case you can select an item from the menu
+       by number or letter."
+
+     * On Page 5-45:
+
+       "When panel ID display id ON, ..."
+
+      should be:
+
+       "When panel ID display is ON, ..."
+
+     * On Page 5-51:
+
+       "Move left by amount specified..."
+
+      should be:
+
+       "Move right by amount specified..."
+
+     * On Page 5-55:
+
+       "SPF/PC activates the the session..."  and
+       "SPF/PC swaps the positions and column counts counts ..." and
+       "If you are in MVSPLIT mode..."
+
+      should be:
+
+       "SPF/PC activates the session..." and
+       "SPF/PC swaps the positions and column counts ..." and
+       "If you are in VSPLIT mode..."
+
+     * On Page 5-58:
+
+       "If a second session has been started, SPF/PC and swaps ..."
+
+      should be:
+
+       "If a second session has been started, SPF/PC swaps ..."
+
+     * On Page 6-16:
+
+       "...first entry having HELP..."
+
+      should be:
+
+       "...first entry having PRIM..."
+
+     * On Page 7-2:
+
+       The examples that describe "WORD_CLASS1", "WORD_CLASS2" etc,
+
+      should be:
+
+       "WORD_COLOR1", "WORD_COLOR2", etc
+
+     * On Page 8-3:
+
+       "Thus if a duplicate name exists, it will be found first in
+       function pool, if not there in the shared pool, and if not
+       there, finally in the profile pool."
+
+      should be:
+
+       "Thus if a duplicate name exists, it will be found first in
+       function pool, if not there in the shared pool, if not there
+       in the global pool, and if not there, finally in the profile
+       pool."
+
+     * On Page 8-21:
+
+       "The foregoing example VPUT statement will ..."
+
+      should be:
+
+       "The foregoing example VPUT statements will ..."
+
+     * On Page 9-20
+
+       "ENVIRONMENT OPTIONS"
+
+      should be:
+
+       "EDITOR OPTIONS"
+
+     * On Page 9-23
+
+       "ENVIRONMENT OPTIONS"
+
+      should be:
+
+       "FILE LIST OPTIONS"
+
+     * On Page 9-49:
+
+       The MOUSE BUTTON MAPPINGS examples in Figure 41 that say
+
+       "[EXPAND-STREAM-SELECT]" and "[EXPAND-BLOCK-SELECT]"
+
+       should be:
+
+       "[EXTEND-STREAM-SELECT]" and "[EXTEND-BLOCK-SELECT]"
+
+     * On Page 4-76:
+
+       The documentation on the ISREDIT PROCESS command incorrectly
+       refers to the ".A" and ".B" line commands;  instead, it should
+       refer to the "A" and "B" line commands.
+
+* Users of the Keytronics KB3270 Keyboard maybe able to use the
+  KB3270 mapping on Panel 0.K to enable all the extra PF-Keys.
+
+  Call our technical support department at (510) 521-5900 for
+  details.
+
+* SPF/PC Version 4.0 includes extra support utilities for the
+  Concurrent Mode, where SPF/PC meters the quantity of users on the
+  system.  These files, SPFMAINT.EXE and UINSTALL.EXE, are intended to
+  be used by sites where a Concurrent License has been specialized
+  purchased; misuse of these utilities may cause an unusable
+  configuration where no users are allowed on.
+

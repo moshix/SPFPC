@@ -1,0 +1,70 @@
+|            ษอออออออออออออออออออออออออออออออออออออออออออป
+|            บ Concurrent SPF/PC Successfully Installed! บ
+|            ศอออออออออออออออออออออออออออออออออออออออออออผ
+
+    Unless installed over an older release of Concurrent SPF/PC, SPF/PC
+    is now configured to allow access to at most 1 user simulteneously.
+
+    To configure SPF/PC to allow more users, run the
+
+|      SPFMAINT /USER
+
+    command.  SPFMAINT will echo your unique network Installation Key
+    which you will need to record and read to a CTC representative.
+
+    To reach a CTC representative, please call:
+
+      In the USA:      1 800 336 3320
+      By Fax:          1 510 521 0369
+      Otherwise:       1 510 521 5900
+
+    Once executed, information on the status of the Concurrent SPF/PC
+    configuration may be read on Panel 0.C, including the Maximum
+    User Quantity and Installation Key.
+
+
+    Before an user can execute Concurrent SPF/PC, their workstation
+    must be specially configured.  To configure, execute:
+
+|       UINSTALL
+
+    on each workstation to make the following changes:
+
+|     - A unique directory must be configured where the SPF/PC
+|       profile information is stored.
+
+        The directory can reside either on the users local workstation
+        hard drive or on a network home directory.
+
+|     - A DOS or OS/2 environmental variable named SPF4PATH (or
+|       SPFPATH) must be set to point to at the location of their
+|       personal profiles.
+
+        The variable should be set in their AUTOEXEC.BAT (for DOS),
+        their CONFIG.SYS (for OS/2), or in a batch file used to
+        execute SPF/PC.
+
+
+
+
+        For example, to reference profiles located in the C:\PROFS
+        directory, you would use the following command:
+
+          SET SPF4PATH=C:\PROFS
+
+|     - If executing SPF/PC in DOS, a DOSX environmental variable
+|       should also be added that tells Concurrent SPF/PC to create
+|       its VM Swap file on the users local hard drive.
+
+        To tell SPF/PC to create the swap file in the root directory
+        of the users C: drive, you would use the following set command:
+
+          SET DOSX=-SWAPDIR C:\
+
+        Please read the SPF/PC License Adminstrator guide enclosed
+        with your Concurrent User packet.  It contains extra information
+        on user configuration and other tips that are important when
+        using Concurrent SPF/PC.
+
+
+

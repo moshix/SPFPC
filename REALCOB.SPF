@@ -1,0 +1,71 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     REALCOMP
+ PURPOSE:   Compile the program currently being edited and display
+            any errors that are found.
+ OPERATION: COMPILE starts the Realia Cobol compiler and
+            causes the output to be sent to the file
+            "compile.out".  Then, it reads the contents of
+            "compile.out" looking for errors associated with the
+            current source file.  If any are found, the first
+            error for each line is displayed as a NOTE line
+            following the line with the error.
+ NOTE:      This MACRO works with Realia COBOL.
+***********************************************************************/
+/* Macro to compile the current file using "COBOL" */
+
+'ISREDIT MACRO(PARMS)'
+
+trace off
+
+/* Get rid of previous error lines */
+'ISREDIT RESET SPECIAL'
+
+/* If source has not been saved, save it */
+'ISREDIT (modified) = DATA_CHANGED'
+if (modified=YES) then
+  'ISREDIT SAVE'
+
+/* Retrieve filename information about source file */
+'ISREDIT (filename) = DATASET'
+filename = TRANSLATE(filename)
+
+ADDRESS CMD 'REALCOB' filename ' /EF:M ,,; 1>compile.out'
+
+quote     = "'"
+quotes    = quote || '"'
+found_one = 0
+
+/* Continue reading until you run into the line for Pass 2.a */
+DO WHILE LINES('COMPILE.OUT') > 0
+   dataline1 = LINEIN('COMPILE.OUT')
+   if (pos("PASS 2A", translate(dataline1))>0) then
+     leave
+END
+
+/* Read remaining lines */
+IF LINES('COMPILE.OUT') then
+  DO WHILE LINES('COMPILE.OUT') > 0
+     dataline1 = LINEIN('COMPILE.OUT')
+     dataline  = translate(dataline1,'/',quotes)
+     say dataline
+     lastline  = lineno
+     PARSE VAR dataline errfile lineno errline
+     IF (lastline = lineno) | (length(lineno) = 0) THEN
+        iterate
+     IF (errfile \= filename) THEN
+        iterate
+     errline   = quote || errline || quote
+     found_one = 1
+    'ISREDIT LINE_BEFORE ' lineno '= NOTELINE 'errline
+  END
+
+if found_one then
+  do
+    'ISREDIT LOCATE FIRST SPECIAL'
+    say "Errors Encountered..."
+  end
+else
+  say "Compilation Successful!"
+

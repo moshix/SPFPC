@@ -1,0 +1,62 @@
+COMPKEY =
+   ")ATTR",
+   ")BODY",
+   ")INIT",
+   ")REINIT",
+   ")PROC",
+   ")END";
+
+EVALKEY =
+   "IF",
+   "TRANS",
+   "TRUNC",
+   "ELSE",
+   "CMD",
+   "CTC",
+   "EXPAND",
+   "DEFAULT",
+   "TYPE",
+   "SCROLL",
+   "CAPS",
+   "JUST",
+   "MOUSE",
+   "ATTN",
+   "PADC",
+   "PANEL",
+   "COLOR",
+   "INTENS",
+   "INTENSE",
+   "VER",
+   "PGM";
+
+GENKEY  =
+   ".HELP",
+   ".CSRROW",
+   ".CSRPOS",
+   ".CURSOR",
+   ".ZVARS",
+   ".MSG";
+
+TYPEKEY =
+   "ON",
+   "OFF",
+   "TRUE",
+   "FALSE",
+   "HIGH",
+   "LOW",
+   "INPUT",
+   "OUTPUT",
+   "DATAIN",
+   "DATAOUT",
+   "NB",
+   "NONBLANK",
+   "ASCII",
+   "NUM",
+   "RANGE",
+   "BOOL",
+   "HEX",
+   ;
+
+BLOCK_COMMENT = "/*", "*/"
+STRING_DELIMITERS = '"', "'"
+

@@ -1,0 +1,91 @@
+/*ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿*/
+/*³      Copyright (c) 1993 by Command Technology Corporation       ³*/
+/*ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´*/
+/*³                                                                 ³*/
+/*³   SPF/PC macro: DELWORD.SPF                                     ³*/
+/*³                                                                 ³*/
+/*³       purpose: This macro deletes the current occurrence of     ³*/
+/*³                the word at the cursor position.  The cursor     ³*/
+/*³                is positioned where the word began before it     ³*/
+/*³                was deleted.                                     ³*/
+/*³                                                                 ³*/
+/*³     operation: This macro should be assigned to a function      ³*/
+/*³                key like Ctrl-W.   Therefore, whenever you are   ³*/
+/*³                positioned on a word to delete, you could just   ³*/
+/*³                hit Ctrl-W, and continue normal editing.         ³*/
+/*³                                                                 ³*/
+/*³       written: 3-30-93 by JLC                                   ³*/
+/*³                Based heavily upon NEXTWORD by SWB.              ³*/
+/*³                                                                 ³*/
+/*ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ*/
+
+'ISREDIT MACRO'
+
+/*------------------------------------------------------------*/
+/* get cursor position and line data.                         */
+/*------------------------------------------------------------*/
+'isredit (line, column) = cursor'
+'isredit (text)         = line .zcsr'
+'isredit (lrecl)        = lrecl'
+
+
+/*------------------------------------------------------------*/
+/* if cursor is not on a data line, then exit with a message. */
+/*------------------------------------------------------------*/
+if (column = 0) | (column > lrecl) then do
+   ZEDSMSG = "PUT CURSOR ON A DATA LINE"
+   ZEDLMSG = "THE NEXT OCCURRENCE OF THE GIVEN WORD WILL BE FOUND."
+   'ISPEXEC SETMSG MSG(ISRZ001)'
+   exit
+end
+
+
+/*------------------------------------------------------------*/
+/* get first previous text position.                          */
+/*------------------------------------------------------------*/
+TableYes = '_' || xrange('0','9') || xrange('A','Z') || xrange('a','z');
+TableNo  = translate(xrange(),,TableYes,' ')
+wordmask = translate(text,,TableNo, ' ');
+wordmask = translate(wordmask,,TableYes,'*');
+
+
+/*------------------------------------------------------------*/
+/* get the wordindex for the cursor position.                 */
+/*------------------------------------------------------------*/
+n  = 1;
+Wi = 0
+Wn = 0
+do FOREVER;
+   i = wordindex(wordmask,n);
+   if (i = 0)       then leave;
+   if (i <= column) then do
+      Wi = i;
+      Wn = n;
+      end;
+   else
+      leave;
+   n = n+1;
+end;
+
+
+/*------------------------------------------------------------*/
+/* if no word found, exit with a message.                     */
+/*------------------------------------------------------------*/
+if (Wi = 0) then do
+   ZEDSMSG = "PUT CURSOR ON WORD"
+   ZEDLMSG = "THE NEXT OCCURRENCE OF THE GIVEN WORD WILL BE FOUND."
+   'ISPEXEC SETMSG MSG(ISRZ001)'
+   exit
+end
+
+
+/*------------------------------------------------------------*/
+/* get word text.                                             */
+/*------------------------------------------------------------*/
+Wm = word(wordmask,Wn);
+Wt = substr(text,Wi,length(Wm));
+
+newtext = delstr(text, Wi, length(Wm))
+'ISREDIT LINE .zcsr = "'newtext'"'
+'ISREDIT CURSOR =' line+0 Wi
+

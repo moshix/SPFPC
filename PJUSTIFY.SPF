@@ -1,0 +1,75 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     PJUSTIFY
+ PURPOSE:   Full justify a paragraph starting with the cursor line.
+ OPERATION: PJUSTIFY starts with the cursor line and word wraps all
+            succeeding lines until it runs into a blank line (marking
+            end of paragraph) or EOF.  Once lines are wrapped to fit,
+            it goes through the lines and pads the internal spacing
+            of each until they span to each of the margins (as
+            defined by the BNDS settings).
+ NOTE:      Indentations are ignored.  Also, a paragraph can have
+            multiple indentation levels (which is inconsistant with the
+            TF line command) and still be considered a single
+            paragraph.  Next version will support indentation.
+ CALLS:     PJUSTIFY makes an external call to the PLEFT macro which
+            takes care of all the word wrapping.  PLEFT.SPF must
+            be available for this macro to execute.
+
+ *** Modified with help by Hans-Joachim Lippke
+**********************************************************************/
+
+'isredit macro'
+
+'isredit (LMARGIN, RMARGIN) = bounds'        /* retrieve margins */
+'isredit (FIRSTLINE, COLNUM) = cursor'       /* finds the first line */
+'isredit (LASTLINE) = LINENUM .zlast'        /* get the document lng */
+
+COL_WIDTH = RMARGIN-LMARGIN                  /* build working width */
+READLINE  = FIRSTLINE
+
+'isredit pleft'                              /* call PLEFT.SPF     */
+LMARGIN = 1
+COL_WIDTH = RMARGIN-1
+WORKLINE = nextline()
+do while WORKLINE \= ''
+
+  WORKLINE = strip(WORKLINE,"T")
+  if pos(' ', WORKLINE)>0 then do
+    WORKLEN = length(WORKLINE)
+    SWORD   = 2
+    do while WORKLEN<COL_WIDTH+1
+      SBREAK  = wordindex(WORKLINE, SWORD)
+      if SBREAK = 0 then do
+        SWORD   = 2
+        SBREAK  = wordindex(WORKLINE, SWORD)
+      end
+      if SBREAK = 0 then do
+         exit
+      end
+      WORKLINE = insert(' ', WORKLINE, SBREAK-1)
+      SWORD    = SWORD+1
+      WORKLEN  = WORKLEN+1
+    end
+  end
+  WRITELINE = READLINE-1
+  'isredit line 'WRITELINE' = <'LMARGIN' "'WORKLINE'">'
+
+  WORKLINE = nextline()
+
+end
+
+exit;                                        /* End of PJUSTIFY */
+
+nextline:
+                                             /* NEXTLINE -- Retreive */
+CLINE = ''                                   /* next line of text from */
+if READLINE<=LASTLINE then do                /* document.  If it empty */
+  'isredit (CLINE) = line 'READLINE          /* or EOF is reached, */
+  if CLINE \= ' ' then                       /* return and empty line */
+    READLINE = READLINE+1
+end
+return CLINE
+
+

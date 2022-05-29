@@ -1,0 +1,89 @@
+  ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+  บ                  SPF/PC Version 4.0 Installation                     บ
+  ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+  During the installation process, you are prompted for file system
+  information:
+
+|     Source Path
+
+  "Source Path" is the location SPF/PC is being installed from. For
+  example, if you are installing SPF/PC from your A: drive, you would
+  specify source path "A:\"
+
+|     Target Path
+
+  "Target Path" designates where you want SPF/PC to reside on your
+  hard disk.  For example, if you want it to install on your D:
+  drive in directory SPFPC40, you would enter "D:\SPFPC40".  The
+  Target Path by default, is "C:\SPFPC40".
+
+
+
+
+
+
+|     Platform
+
+  "Platform" prompts you to enter "DOS" or "OS2" to install the files
+  needed to run under that platform, or "BOTH" to install the files
+  needed to run under both operating systems.  If you intend to run
+  under Windows NT, install the OS/2 executables.
+
+  Once entered, you are prompted to confirm the path information:
+
+|     Do you want to change the above fields?
+
+  To continue installing, enter "N". Otherwise change the paths as
+  desired and enter "Y".
+
+
+  If you have enough disk space you will be prompted to backup previous
+  SPF system files (which include .SPF, .PRF, .TBL, and .GBL files).
+
+  If you select "Y" these files will be copied to a directory SPFBACK
+  located in the destination directory you selected previously.
+
+
+
+  Finally, if this is your first installation, you will be prompted to choose
+  between two keyboard configurations:
+
+|     Keyboard Layout?  (A or B)
+
+  Select "A" for a 3270-LIKE keyboard layout.
+  Select "B" for an SPF/PC V 2.1-LIKE keyboard layout.
+
+
+Option "A" provides a 3270-Style layout where:
+
+   - "ู Enter" key = NewLine. It moves the cursor to the next
+     unprotected field. IT DOES NOT EXECUTE COMMANDS!
+
+   - "Right-Ctrl" key = 3270-ENTER. Executes commands inside edit or
+     in a dialog panel. For example:
+
+        To select EDIT OPTION 2 from the main menu, type "2" in the
+        OPTION field then press "Right-Ctrl".
+
+     The "Enter" key on the numeric keypad also performs the
+     3270-ENTER function.
+
+
+
+Option "B" provides a layout similar to SPF/PC v 2.1 where:
+
+   - "ู Enter" key = SPFPC_ENTER. Executes commands inside edit
+     or in a dialog panel. For example:
+
+        To select EDIT OPTION 2 from the main menu, type "2" in the
+        OPTION field then press "ู Enter".
+
+     The "Right-Ctrl" and "Enter" key on the numeric keypad performs
+     the 3270-ENTER function.
+
+   - "Tab" key jumps to next unprotected field.
+
+Whether you select "A" or "B," you may always configure SPF/PC to
+respond differently later by selecting an alternate keyboard scheme
+from Panel 0.K.

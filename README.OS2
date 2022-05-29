@@ -1,0 +1,108 @@
+***********************************************************************
+
+FILE:     README.OS2
+
+PRODUCT:  SPF/PC
+
+VERSION:  4.0
+
+BY:       Command Technology Corporation
+
+CONTENTS: Specific information on SPF/PC Version 4.0 OS/2
+          implementation.
+
+***********************************************************************
+
+See also README.DOC for general information concerning SPF/PC.
+
+* NOTE! The current SPF2.EXE is a OS/2 1.x 16-bit version.  The
+  32-Bit OS/2 version will be available later at no charge.
+
+  Limitations of the 16-Bit version include:
+
+    - Cannot load files larger than ~10Meg.  OS/2 16-bit applications
+      only have a 16M swappable address space, meaning that we
+      only have 16M of scratch space to deal with.  32-bit applications
+      have virtual address spaces of over 1G.
+
+    - Cannot SPLIT/SWAP/VSPLIT when a macro is active.  If a macro or
+      a command procedure has executed and suspended, either because
+      of an EDIT or a DISPLAY/TBDISPL statement, swap/split is
+      disabled.  However, if the macro/command procedure terminates,
+      split/swap is re-enabled.
+
+* If you cannot execute an operating system command via panel 6
+  or by typing "OS2 XXX" (where XXX is some command), and OS/2
+  returns a (-1) try:
+
+    1) executing SPF2.EXE from a CMD prompt in an OS/2 windows or
+       full screen session.
+    2) If this does work, delete the PM or WorkPlace Shell Icon
+       entry for SPF2, and generate a new one from scratch,
+       specifying SPF2.EXE as the executable.
+
+  Sometimes during installation, OS/2 loses track of the command
+  processor in association with our icon, therefore no operating
+  system commands can be issued.  This seems to be a bug the OS/2
+  API but is easily worked around by recreating the object.
+
+* In OS/2, you can associate SPF/PC to an icon as follows:
+
+  - Manually add the icon yourself from the Workplace Shell.  As you
+    create a Program Item for SPF2.EXE, it will automatically
+    associate itself with the SPF2.ICO icon file.
+
+* In OS/2 2.x extended columns are supported by certain drivers and
+  video boards.  If supported, you can get into extended video
+  modes in OS/2 with the mode command.  For example, to switch
+  to 132 x 60 mode, you can use the:
+
+     MODE CO132,60
+
+  OS/2 command from the OS/2 system prompt.
+
+  If you want to switch into this extended mode while inside SPF/PC
+  issue the SPF/PC Primary Command:
+
+     OS2 MODE CO132,60
+
+  SPF/PC will automatically adjust to the new screen dimensions.
+
+* If you are running SPFPC.EXE from an OS/2 2.x DOS Box, then you
+  may run into some problems loading large files.  In a DOS box,
+  SPFPC.EXE executes as if it were in Windows 3.x, so many of the
+  Windows specific notes in README.DOS apply to this situation.
+
+  Also, you may want to increase the DPMI_MEMORY_LIMIT to above the
+  default 2 megabytes it starts with.  This will enable SPFPC.EXE
+  to load larger files.  We suggest 6 megabytes or greater.
+
+* When running SPFPC.EXE from an OS/2 2.x DOS Box, the print screen
+  key causes an "Abnormal Termination" error.  This appears to be
+  a conflict with OS/2 and the 32-bit DOS Extender.  We recommend
+  using SPF2.EXE whenever you are in OS/2.  The "print" command is
+  always available to get a screen print and does not generate this
+  error.
+
+* When running on a network, your LPT1 port must be mapped to a valid,
+  on-line printer.  If not, when you press the print screen key, your
+  system will appear to "hang".  Actually, the network is just trying
+  to find a printer to service your screen print request.  After almost
+  3 minutes, the network will return control to OS/2.  Be sure to map
+  LPT1 to a valid printer to avoid this problem.
+
+* If you edit a file with Extended Attributes, the EA's are maintained
+  during save.  However, if the profile for the file edited indicates
+  BACKUP ON, SPF/2 will perform a COPY of the original file to create a
+  backup, and then write the new file back on top of the original, which
+  makes the save time essentially twice as long as without EAs.  If the
+  file has no extended attributes, the normal procedure of renaming the
+  original to the backup file, and then writing the new file occurs.
+
+* If you are running CITRIX OS/2 2.x and you want to use macros, you
+  must add the following line to your STARTUP.CMD file (located in the
+  root directory of your OS/2 drive):
+
+            "DETACH CAPTIVE REXXINIT"
+
+

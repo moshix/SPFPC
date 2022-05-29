@@ -1,0 +1,17 @@
+/*-------------------*/
+/* Sample REXX Macro */
+/*-------------------*/
+
+address ispexec
+
+'vget (var2)'
+
+var3 = "sample text"
+
+'display panel(sample) cursor(var2) msg(smpl001)'
+do while (rc<8)
+   'display'
+end
+
+'vput (var2) profile'
+

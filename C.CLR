@@ -1,0 +1,59 @@
+WORD_COLOR1 =
+   "#define",
+   "#else",
+   "#endif",
+   "#error",
+   "#if",
+   "#ifdef",
+   "#ifndef",
+   "#include",
+   "#line",
+   "#pragma",
+   "#undef";
+
+WORD_COLOR2 =
+   "case",
+   "default",
+   "else",
+   "if",
+   "switch",
+   "until",
+   "while",
+   "break",
+   "continue",
+   "do",
+   "for",
+   "goto",
+   "return";
+
+WORD_COLOR3 =
+   "auto",
+   "byte",
+   "char",
+   "const",
+   "double",
+   "enum",
+   "extern",
+   "float",
+   "int",
+   "long",
+   "register",
+   "short",
+   "static",
+   "struct",
+   "typedef",
+   "union",
+   "unsigned",
+   "void",
+   "volitile",
+   "USHORT",
+   "ULONG",
+   "UCHAR",
+
+BLOCK_COMMENT    = "/*", "*/"
+LINE_COMMENT     = "//"
+NO_BREAK_CHAR    = "_"
+CASE             = ASIS
+STRING_DELIMITERS = '"', "'"
+SPECIAL_CHARS    = "(){};"
+

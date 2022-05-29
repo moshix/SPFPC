@@ -1,0 +1,25 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     COUNTSTR
+
+ PURPOSE:   Find the number of times that a string is found in a file.
+ OPERATION: COUNTSTR scans the file and counts the number of times that
+            the string is found.
+***********************************************************************/
+
+'isredit macro (string)'
+   if string = '' then
+      do
+         ZEDSMSG = "The search string was not specified."
+         ZEDLMSG = "Type "COUNTSTR <STRING>", where STRING is the string you would like to count."
+         'ISPEXEC SETMSG MSG(ISRZ001)'
+         exit 8
+      end
+   'isredit seek all 'string
+   'isredit (count) = seek_counts'
+   count = strip(count,'l','0')
+   ZEDSMSG = "The string was found" count "times."
+   'ISPEXEC SETMSG MSG(ISRZ000)'
+exit 0
+

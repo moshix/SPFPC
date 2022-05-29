@@ -1,0 +1,21 @@
+|             ษออออออออออออออออออออออออออออออออออออออออออออป
+|             บ SPF/PC Version 4.0 successfully installed! บ
+|             ศออออออออออออออออออออออออออออออออออออออออออออผ
+
+    To execute from DOS, go to the Target Directory and type:
+
+       SPFPC  - SPF/PC Version 4.0
+
+    If chose to install OS/2 files, type the following from an OS/2
+    command prompt:
+
+       SPF2   - Edit macro support via IBM's REXX DLL
+
+    If you selected to make changes to the AUTOEXEC.BAT file, please
+    restart your machine to have those changes take effect.
+
+    If you would like a printout of the earlier installation text, type:
+
+        COPY A:\INSTALL.DOS PRN
+
+

@@ -1,0 +1,79 @@
+/* --------------------------------------------------------------------
+ (c) Copyright 1992 Command Technology Corporation
+ ______________________________________________________________________
+
+ Upgraded for use with both IBM VM and MVS mainframe systems using
+ IBM OS/2 2.0 REXX REXXUTIL functions.
+                Bruce E. H”gman, (Compuserve 72050,1327)
+                Sr. Systems Engineer, EDS Corporation, Washington DC
+ Related .SPF macros also upgraded:  ENDSEND, RECEIVE.
+ New REXX:  SAVEMFOS.CMD
+ Use of the upgraded .SPF macros and REXX requires:
+ (1)  OS/2 2.0 (The REXX functions do not work with previous OS/2)
+ (2)  Installed REXX (You must have installed OS/2 with REXX)
+ (3)  REXX20 fix or OS/2 2.1á.  The REXX20 fixes are available on
+      Compuserve IBMOS2 forum.
+ ______________________________________________________________________
+
+
+   ENDSEND.SPF -- Calls SEND macro to perform upload of edited dataset
+                (if the file has been edited), and then ENDs out of
+                current edit session.
+
+   Usage:       ENDSEND filename filetype filemode
+
+   For example: If you want to simply download the file
+
+                   TESTFILE TEMP A
+
+                from your mainframe, edit it, and reupload it upon
+                completion, you would execute the following sequence of
+                commands:
+
+                In SPF/PC:
+
+                   EDIT TESTFILE.TMP           {or any empty file}
+                   RECEIVE TESTFILE TEMP A
+
+                {this brings file into edit session -- make all
+                appropriate changes -- to quit and save session}
+
+                   ENDSEND TESTFILE TEMP A
+
+                {or of you just want to save session without quiting,
+                perform:}
+
+                   SEND TESTFILE TEMP A
+
+                {Either of these command will upload the existing
+                dataset back to the mainframe}.
+*/
+
+'isredit macro()'
+arg parm
+
+trace off
+
+'isredit (MODIFIED) = DATA_CHANGED'
+ERROR = 0
+
+if (MODIFIED>0) then
+  do
+    'isredit SEND 'parm
+    ERROR = rc
+  end
+
+if (ERROR=0) then
+  do
+    'ispexec vget ZPF03 ZLAST_F3'
+    if (ZLAST_F3<>"ZLAST_F3") then
+      do
+        ZPF03     = ZLAST_F3
+        ZLAST_F3  = ""
+        'ispexec vput ZPF03 ZLAST_F3'
+      end
+
+    'isredit cancel'
+  end
+
+return 0;

@@ -1,0 +1,35 @@
+/***********************************************************************
+ MACRO:     RIGHTCOM
+ PURPOSE:   Right align all comments in the file.
+ OPERATION: RIGHTCOM examines every line in the file--except the first
+            one---for lines that contain a command followed by a
+            comment.  If it finds one, it shifts the comment to end at
+            the column specified in "maxline".
+ NOTE:      The assumption is that comments start with a slash-asterisk
+            and end with a asterisk-slash--like they do in REXX.  Also,
+            note that this procedure WILL shift lines that have slash
+            -asterisk sequences between quotes.
+***********************************************************************/
+
+'isredit macro'
+
+maxline = 72
+'isredit (LENGTH) = linenum .zlast'
+
+do i = 2 to length
+    'isredit (THELINE) = line ' i
+
+    parse var theline command '/*' comment '*/'
+    if command ª= '' & comment ª= '' then do
+        stripcmd = strip(command)
+        allcomm = '/*' strip(comment) '*/'
+        strtcomm = maxline - length(allcomm)
+        if length(stripcmd) < strtcomm then do
+            'isredit line' i '= < 1 (command)' strtcomm '(allcomm) >'
+            end
+        end
+
+    end i
+
+EXIT   /* stop the program */
+

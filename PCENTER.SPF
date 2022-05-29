@@ -1,0 +1,52 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     PCENTER
+ PURPOSE:   Center a paragraph starting with the cursor line.
+ OPERATION: PCENTER starts with the cursor line and word wraps all
+            succeeding lines until it runs into a blank line (marking
+            end of paragraph) or EOF.  Once lines are wrapped to fit,
+            it goes through and centers the wrapped lines within
+            the margins (determined by the BNDS setup).
+ NOTE:      Indentations are ignored.  Also, a paragraph can have
+            multiple indentation levels (which is inconsistant with the
+            TF line command) and still be considered a single
+            paragraph.  Next version will support indentation.
+ CALLS:     PCENTER makes an external call to the PLEFT macro which
+            takes care of all the word wrapping.  PLEFT.SPF must
+            be available for this macro to execute.
+**********************************************************************/
+
+'isredit macro'
+
+'isredit (LMARGIN, RMARGIN) = bounds'        /* retrieve margins */
+'isredit (FIRSTLINE, COLNUM) = cursor'       /* finds the first line */
+'isredit (LASTLINE) = LINENUM .zlast'        /* get the document lng */
+
+COL_WIDTH = RMARGIN-LMARGIN                  /* build working width */
+READLINE  = FIRSTLINE
+
+'isredit pleft'                              /* call PLEFT.SPF     */
+WORKLINE = nextline()
+do while WORKLINE \= ''
+
+  WORKLINE = center(strip(WORKLINE), COL_WIDTH+1)
+  WRITELINE = READLINE-1
+  'isredit line 'WRITELINE' = <'LMARGIN' "'WORKLINE'">'
+  WORKLINE = nextline()
+
+end
+
+exit;                                        /* End of PCENTER */
+
+nextline:
+                                             /* NEXTLINE -- Retreive */
+CLINE = ''                                   /* next line of text from */
+if READLINE<=LASTLINE then do                /* document.  If it empty */
+  'isredit (CLINE) = line 'READLINE          /* or EOF is reached, */
+  if CLINE \= ' ' then                       /* return and empty line */
+    READLINE = READLINE+1
+end
+return CLINE
+
+

@@ -1,0 +1,21 @@
+WORD_COLOR1 =
+   "page",
+   "include",
+   "assume",
+   "public",
+   "proc",
+   "endp",
+   "ends",
+   "segment",
+   "_codeseg",
+   "_data",
+
+WORD_COLOR2 =
+   "near",
+   "far"
+
+WORD_COLOR3 =
+
+LINE_COMMENT  = ";", ""
+CASE          = ASIS
+

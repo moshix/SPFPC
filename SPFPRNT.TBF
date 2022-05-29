@@ -1,0 +1,6 @@
+KEYS(PRNNAME)NAMES(PRNDESC,PRNDEV,PRNIFF,PRNFFF,PRNSET,PRNRES,PPPGCOLS,PPPGLINE,PRNPFF,PPTPMARG,PPBTMARG,PPLTMARG,PPRTMARG,PPHEAD,PPHALL,PPHDSP,PPFOOT,PPFALL,PPFTSP)
+"DEFAULT","Default Printer","PRN","N","N",,,,0,"N",,,,,,,,,,
+"HPBIG","Laserjet with 12pt font - Paginated","PRN","N","N","\027(8U\027(s0p10.00h14.0v0s0b3T\027&l0O","\027E",80,60,"N",,,,,"NP","S",,"DT","S",
+"HPLNDSCP","Laserjet Landscape Mode","PRN","N","N","\027(10U\027(s0p10.00h12.0v0s0b3T\027&l1O","\027E",,,"N",,,,,,,,,,
+"HPSMALL","Laserjet with 8pt LPRINTER font - Paginated","PRN","N","N","\027(10U\027(s0p16.67h8.5v0s0b0T\027&l0O","\027E",132,60,"N",,,,,"NP","S",,"DT","S",
+"PAGES","Default Printer with Page Numbers","PRN","N","N",,,80,60,"N",,,,,,,,"P","C",

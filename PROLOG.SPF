@@ -1,0 +1,60 @@
+/*-------------------------------------------------*/
+/* spf macro: prolog                               */
+/*(c) Copyright 1992 Command Technology Corporation*/
+/*                                                 */
+/*-------------------------------------------------*/
+'isredit macro'
+'isredit up max'
+mname = ""
+function = ""
+name = ""
+date = ""
+do while mname = "" | function = "" | name = "" | date = ""
+  if mname = "" then
+    do
+      say 'Enter module name'
+      parse pull mname
+    end
+  else
+    if function = "" then
+      do
+        say 'Enter module function'
+        parse pull function
+      end
+    else
+      if name = "" then
+        do
+          say 'Enter your name'
+          parse pull name
+        end
+      else
+        if date = "" then
+          do
+            say "Enter today's date in MM/DD/YY format"
+            parse pull date
+          end
+end
+'isredit line_after 0 = dataline /*--------------------------------------------------------------------*/'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+'isredit line_after 0 = dataline <1 "/* Modifications:" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+name_line = '/* Author: 'name '   Date: 'date
+'isredit line_after 0 = dataline <1 "'name_line'" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+function_line = '/* Function: 'function
+'isredit line_after 0 = dataline <1 "'function_line'" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+mname_line = '/* Module name: 'mname
+'isredit line_after 0 = dataline <1 "'mname_line'" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+'isredit line_after 0 = dataline <1 "/* Copyright 1990 Your Company Name" 71 "*/">'
+'isredit line_after 0 = dataline <1 "/*" 71 "*/">'
+
+'isredit line_after 0 = dataline /*--------------------------------------------------------------------*/'
+

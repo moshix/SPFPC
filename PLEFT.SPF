@@ -1,0 +1,113 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     PLEFT
+ PURPOSE:   Left aligh a paragraph starting with the cursor line.
+ OPERATION: PLEFT starts with the cursor line and word wraps all
+            succeeding lines until it runs into a blank line (marking
+            end of paragraph) or EOF.  All text on each line is wrapped
+            even if it lies outside the BNDS region.  Margins are
+            defined by the BNDS settings.  PLEFT also puts single
+            spaces in between each word, unless a word is is terminated
+            by one of the set [.?!:], in which case it add two spaces
+            {See STERMS global variable to adjust this}.
+
+ NOTE:      Indentations are ignored.  Also, a paragraph can have
+            multiple indentation levels (which is inconsistant with the
+            TF line command) and still be considered a single
+            paragraph.  Next version will support indentation.
+**********************************************************************/
+
+'isredit macro'
+
+'isredit (LMARGIN, RMARGIN) = bounds'        /* retrieve margins */
+'isredit (FIRSTLINE, COLNUM) = cursor'       /* finds the first line */
+'isredit (LASTLINE) = LINENUM .zlast'        /* get the document lng */
+
+COL_WIDTH = RMARGIN-LMARGIN                  /* build working width */
+STERMS    = ".!?:"                           /* special sentence end */
+                                             /* characters */
+READLINE  = FIRSTLINE
+WRITELINE = FIRSTLINE                        /* keep track of which */
+                                             /* line of the paragraph */
+                                             /* is being read from and */
+                                             /* written to. */
+
+CLINE    = nextline()                        /* get the first line */
+CURRLINE = strip(CLINE)
+NEXTLINE = nextline()                        /* get the second line */
+do until NEXTLINE = ' '                      /* process until a blank */
+  call procline                              /* line shows up marking */
+  NEXTLINE = nextline()                      /* an end to a paragraph */
+end
+
+if CURRLINE \= ' ' then do                   /* if there is still more */
+   CURRLINE = ' 'CURRLINE                    /* data in the working line */
+   call writeline                            /* write it off to the doc */
+end
+
+if WRITELINE<=READLINE-1 then do             /* if more lines were */
+  READLINE = READLINE-1                      /* read than written, */
+  'isredit delete all 'WRITELINE' 'READLINE' ' /* delete extra ones */
+end
+'isredit cursor = 'FIRSTLINE' 'COLNUM''      /* reset cursor position */
+
+exit;                                        /* End of PLEFT Macro */
+
+procline:                                    /* perform word wrapping */
+                                             /* on the pair of lines */
+NEXTLINE = CURRLINE' 'NEXTLINE               /* CURRLINE, NEXTLINE */
+CURRLINE = ''
+do while NEXTLINE \= ' '
+
+  parse var NEXTLINE FWORD NEXTLINE          /* parse for first word */
+
+  if length(CURRLINE''FWORD)>COL_WIDTH+1 then
+    call writeline                           /* larger than col width? */
+
+  if pos(right(FWORD, 1),STERMS)>0 then      /* end of sentence? */
+    CURRLINE = CURRLINE FWORD' '             /* add extra space */
+  else
+    CURRLINE = CURRLINE FWORD
+
+end
+CURRLINE = substr(CURRLINE, 2)               /* truncate lead space */
+return;
+
+nextline:
+                                             /* NEXTLINE -- Retreive */
+CLINE = ''                                   /* next line of text from */
+if READLINE<=LASTLINE then do                /* document.  If it empty */
+  'isredit (CLINE) = line 'READLINE          /* or EOF is reached, */
+  if CLINE \= ' ' then                       /* return and empty line */
+    READLINE = READLINE+1
+end
+return CLINE
+
+writeline:                                   /* write the line back */
+                                             /* to the document */
+CURRLINE = substr(CURRLINE, 2)
+
+if WRITELINE=READLINE then do                /* the write pointer has */
+                                             /* caught up to the read */
+                                             /* pointer - insert a    */
+                                             /* new line */
+  if WRITELINE>=LASTLINE then
+    'isredit line_after 'LASTLINE' = <'LMARGIN' "'CURRLINE'">'
+  else
+    'isredit line_before 'READLINE' = <'LMARGIN' "'CURRLINE'">'
+  READLINE  = READLINE+1
+  LASTLINE  = LASTLINE+1
+end                                          /* the write pointer is */
+  else do                                    /* pointing at a line   */
+                                             /* read earlier */
+    'isredit line 'WRITELINE' = <'LMARGIN' "'CURRLINE'">'
+end
+WRITELINE = WRITELINE+1
+CURRLINE  = ''
+return
+
+indent: procedure                            /* return quantity of */
+arg string                                   /* spaces tp first char */
+return length(string)-length(strip(string, "L"))
+

@@ -1,0 +1,58 @@
+/* Edit Macro: ONLY.SPF
+
+   Purpose:    Performs converse of EXCLUDE command, where the
+               current edit session is search and all lines that
+               DO NOT contain the specified search criterion are
+               excluded.
+
+   Usage:      Takes arguments as specified for the FIND command.
+
+   Note:       As coded, the macro below is unneccessarily complex.
+               Most of the code below is for error checking and
+               displaying responses as short messages in the upper
+               right hand corner of the screen.  The real code
+               that does the work is:
+
+                    'isredit macro(string)'
+                    'isredit exclude all'
+                    'isredit find all' string
+*/
+
+'isredit macro'
+parse arg string
+
+NONE_FOUND  = 4       /* ISREDIT FIND return value */
+
+if (string="") then
+  do
+
+    /* need to have atleast one parameter */
+    ZEDSMSG = "MISSING PARAMETER"
+    ZEDLMSG = "USAGE: ONLY <STRING>"
+
+  end
+
+else
+  do
+
+    /* perform exclude and find combination */
+    'isredit exclude all'
+    'isredit find all' string
+
+    if (rc=NONE_FOUND) then
+      do
+        ZEDSMSG = 'NO CHARS FOUND'
+        ZEDLMSG = "COULD NOT FIND ANY OCCURANCE OF SPECIFIED STRING."
+      end
+    else
+      do
+        /* count the number of values found */
+        'isredit (FCOUNT1, FCOUNT2) = find_counts'
+        ZEDSMSG = FCOUNT1+0 'OCCURENCES FOUND'
+        ZEDLMSG = "ALL DISPLAYED LINES CONTAIN THE SPECIFIED STRING."
+      end
+  end
+
+/* display short message as set up by the ZEDSMSG/ZEDLMSG combo */
+'ISPEXEC SETMSG MSG(ISRZ000)'
+

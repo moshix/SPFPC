@@ -1,0 +1,16 @@
+/* GETVAR.SPF  Sample Macro for SPF/PC                             */
+/*             This macro serves as a sample on how to get an OS/2 */
+/*             environmental variable from an SPF/PC macro.        */
+/* Warning:    This does not work in DOS                           */
+
+'isredit macro'
+
+/* To retrieve the value of the OS/2 environmental variable PATH */
+mvar = value("PATH",, "OS2ENVIRONMENT")
+/* mvar is filled with PATH contents */
+
+/* To set TEMP OS/2 environmental variable to "SET TO THIS" */
+mvar = value("TEMP","SET TO THIS", "OS2ENVIRONMENT")
+/* mvar will be filled with "SET TO THIS" */
+
+say mvar

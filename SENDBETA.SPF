@@ -1,0 +1,104 @@
+/* SEND.SPF --  Performs upload of current dataset to mainframe
+ (c) Copyright 1992 Command Technology Corporation
+ ______________________________________________________________________
+
+ Upgraded for use with both IBM VM and MVS mainframe systems using
+ IBM OS/2 2.0 REXX REXXUTIL functions.
+                Bruce E. H”gman, (Compuserve 72050,1327)
+                Sr. Systems Engineer, EDS Corporation, Washington DC
+ Related .SPF macros also upgraded:  ENDSEND, RECEIVE.
+ New REXX:  SAVEMFOS.CMD
+ Use of the upgraded .SPF macros and REXX requires:
+ (1)  OS/2 2.0 (The REXX functions do not work with previous OS/2)
+ (2)  Installed REXX (You must have installed OS/2 with REXX)
+ (3)  REXX20 fix or OS/2 2.1á.  The REXX20 fixes are available on
+      Compuserve IBMOS2 forum.
+ ______________________________________________________________________
+
+                using OS/2 EE Communications Manager call, SEND.
+
+   Usage:       SEND [filename filetype [filemode]]
+
+   It Performs: SEND will COPY the specified file to the end
+                of whatever file you are currently editing.
+                If you simply want to edit the Mainframe dataset
+                by itself (you don't want it appended to), open
+                up an empty file and perform RECEIVE into it.
+
+   For Example: If you want to simply download the file
+
+       VM:         TESTFILE TEMP A
+       MVS:        TESTFILE
+       (The MVS filename is expanded to a fully qualified name with your
+       current TSO dataset name prefix unless you enter the filename
+       within apostrophes and provide the fully qualified name.)
+
+                from your mainframe, edit it, and reupload
+                it upon completion, you would execute the following
+                sequence of commands:
+
+       VM:      In SPF/PC:
+
+                   EDIT TESTFILE.TMP           {or any empty file}
+                   RECEIVE TESTFILE TEMP A
+
+       MVS:     In SPF/PC:
+
+                   EDIT TESTFILE.TMP           {or any empty file}
+                   RECEIVE TESTFILE
+
+                This will perform the download of the TESTFILE TEMP A
+                dataset and copy it into the currently open edit session
+                (at the end, if there is some text already there).  It
+                also sets the PFF3 key to invoke the SEND function, so
+                if you change the edit session, and hit F3, it will
+                automatically upload the dataset back up to the
+                mainframe.
+
+  Upgrade to recognize mainframe OS type uses REXXUTIL SYSINI function
+  call to remember type of OS so syntax of send command is different.
+  VM system has additional parameters, and MVS does not.
+
+*/
+
+'isredit macro'
+arg MF_FileName MF_FileType
+trace off
+
+/* Load REXXUTIL functions if not already loaded for session */
+if 0 < RxFuncQuery('SysLoadFuncs') THEN DO;
+   Call RxFuncAdd 'SysLoadFuncs','REXXUTIL','SysLoadFuncs';
+   Call SysLoadFuncs;
+END;
+/* Obtain remembered mainframe OS type from OS2.INI file. */
+MF_OS_Type=''; MF_OS_Type=SysIni(,'SPF','MFOSTYPE');
+if MF_OS_Type='' | MF_OS_Type='ERROR:' then do;
+   address cmd 'call SAVEMFOS'; /* Do dialog to get OS type */
+   MF_OS_Type=SysIni(,'SPF','MFOSTYPE');
+end;
+if (MF_OS_Type\='MVS' | MF_FileName="") then do;
+   if (MF_FileType="") then parse value linein("TEMP.$$2") with MF_FileName MF_FileType
+   pparen="(";
+end;
+if MF_OS_Type='MVS' then do; MF_FileType=""; pparen=""; end;
+
+if (MF_OS_Type='MVS'|(MF_OS_Type\='MVS' & MF_FileType\="")) then do;
+   'isredit create temp.$$1 .zfirst .zlast'
+   address cmd 'SEND temp.$$1 'MF_FileName MF_FileType pparen'CRLF ASCII'
+   if (rc>0) then say "Error during SEND."
+   address cmd 'erase temp.$$1'
+end;
+else do;
+   If (MF_OS_Type\='MVS') then do;
+      say "Syntax of SEND macro:"
+      say "VM mainframe OS:"
+      say "  Usage: SEND [filename filetype [filemode]]"
+   end;
+   else do;
+      say "MVS mainframe OS:"
+      say "  Usage: SEND [filename]"
+      say "  Example:  send clist(testmbr)"
+      say "  Example:  send 'other.name.clist(testmbr)'"
+   end;
+end;
+return 0;

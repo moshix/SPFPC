@@ -1,0 +1,114 @@
+/***********************************************************************
+
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     BACKBOX - SPF/PC Background Box Drawing Edit Macro
+
+ PURPOSE:   Draw a box from the top left hand corner as defined by
+            the current cursor position to the cursor position as
+            defined by the second invocation of the macro.  As an
+            aid to invoking the macro twice, it sets the PF48 key
+            to "BOX" and then resets the key back to its original
+            contents after it is done.
+
+ USAGE:     Type "BOX" on the command line and then move your cursor
+            to where you would like the upper left hand corner of the
+            box to be;  hit ENTER.
+
+            Move the cursor to where you would like the lower right
+            hand corner of the box to be, and hit PF48.
+
+ NOTE:      PF48 = Alt-PF12
+
+ NOTE:      BACKBOX simply writes over blank spaces in your text, so
+            if you specify coordinatesºthat intersect blocks of text,
+            the BOX will be drawn behind the existing text.  See BOX
+            for a macro that will write over the existing text, like
+            this example.
+
+
+**********************************************************************/
+
+'isredit macro'
+
+'isredit (ROW, COL) = cursor'
+'isredit (WIDTH)    = data_width'
+if (ROW<1) | (COL<1) | (COL>WIDTH) then
+  call fatalerr cursor not in text, cursor must be positioned in text to perform box
+
+'ispexec vget BASEROW BASECOL LASTPF48 ZPF48'
+
+if (BASEROW='') then
+  do
+    BASEROW  = ROW+0
+    BASECOL  = COL+0
+    LASTPF48 = ZPF48
+    ZPF48    = 'BACKBOX'
+    'ispexec vput BASEROW BASECOL LASTPF48 ZPF48'
+    call dispmsg position lr corner and hit PF48, move the cursor to the lower right corner and hit PF48
+  end
+else
+  do
+    if (ROW<BASEROW) | (COL<BASECOL) then
+      call fatalerr lower right corner please, position cursor in the lower right corner of box and hit PF48
+    else
+      do
+        call dblbox BASEROW BASECOL ROW+0 COL+0
+        BASEROW  = ''
+        BASECOL  = ''
+        ZPF48    = LASTPF48
+        LASTPF48 = ''
+        'ispexec vput BASEROW BASECOL LASTPF48 ZPF48'
+      end
+  end
+
+exit 0
+
+dblbox:
+arg BASEROW BASECOL DESTROW DESTCOL
+
+  'isredit label 'BASEROW' = .top'
+  'isredit label 'DESTROW' = .bott'
+
+  x = DESTCOL-BASECOL
+  y = DESTROW-BASEROW
+
+  if (y>0) then
+    do
+      'isredit change " " Í .top  .top  all 'BASECOL+1' 'DESTCOL-1
+      if (x>0) then
+        'isredit change " " Í .bott .bott all 'BASECOL+1' 'DESTCOL-1
+    end
+
+  if (x>1) then
+    do
+      'isredit change " " Í .bott .bott all 'BASECOL+1' 'DESTCOL-1
+      'isredit change " " º .top .bott all 'BASECOL' 'BASECOL
+      'isredit change " " º .top .bott all 'DESTCOL' 'DESTCOL
+    end
+
+  if (x>1) & (y>0) then
+    do
+      'isredit change º É .top .top   all 'BASECOL' 'BASECOL
+      'isredit change º » .top .top   all 'DESTCOL' 'DESTCOL
+      'isredit change º È .bott .bott all 'BASECOL' 'BASECOL
+      'isredit change º ¼ .bott .bott all 'DESTCOL' 'DESTCOL
+    end
+
+  'isredit reset chg .top .bott'
+
+return 0
+
+fatalerr:
+arg mvar
+
+  call dispmsg mvar
+
+exit -1
+
+dispmsg:
+arg ZEDSMSG, ZEDLMSG
+
+  'ISPEXEC SETMSG MSG(ISRZ000)'
+
+return 0

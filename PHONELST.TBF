@@ -1,0 +1,3 @@
+NAMES(fname,lname,company,addr,city,state,zip,phonew,phoneh,phonef)
+"Joe","Salesperson","CTC","1040 Marina Village Pkwy","Alameda","CA",94501,"800-336-3320","510-521-5900","510-521-0369"
+"moshix","moshix","the moshix group",,"Poughkepsie",,,"713 889 9912",,

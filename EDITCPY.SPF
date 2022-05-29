@@ -1,0 +1,113 @@
+/*ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿*/
+/*³      Copyright (c) 1993 by Command Technology Corporation       ³*/
+/*ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´*/
+/*³                                                                 ³*/
+/*³   SPF/PC macro: EDITCPY.SPF                                     ³*/
+/*³                                                                 ³*/
+/*ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´*/
+/*³                                                                 ³*/
+/*³   Usage: EDITCPY is best used when assigned to a key, like      ³*/
+/*³          Ctrl-E.  It allows you to be inside a source module    ³*/
+/*³          that makes reference to a copy book or a C include     ³*/
+/*³          file and, by positioning the cursor on top of the      ³*/
+/*³          name of the file and hitting the assigned key,         ³*/
+/*³          edit the file with a single keystroke.                 ³*/
+/*³                                                                 ³*/
+/*³          Unless a pathname is specified in the text, the        ³*/
+/*³          current directory is assumed.                          ³*/
+/*³                                                                 ³*/
+/*³   Notes: Due to a limitation in Version 3.0, when a macro is    ³*/
+/*³          active, you cannot perform SPLIT, FSPLIT or SWAP.      ³*/
+/*³          The EDITCPY macro technically does not terminate       ³*/
+/*³          until you exit out of the file that you have           ³*/
+/*³          selected.  Therefore, if you select a file to edit     ³*/
+/*³          with EDITCPY, you will not be allowed to perform       ³*/
+/*³          a SPLIT, SWAP, or FSPLIT until you exit out of that    ³*/
+/*³          edit session with an END or CANCEL command.            ³*/
+/*³                                                                 ³*/
+/*³          EDITCPY maybe executed repetatively inside each        ³*/
+/*³          other, so that you may select "file2" from within      ³*/
+/*³          "file1", and then select "file3" from within that      ³*/
+/*³          edit session.  The previous still remain open, and     ³*/
+/*³          will be display in their present state as you exit     ³*/
+/*³          out of the newly selected edit sessions.               ³*/
+/*³                                                                 ³*/
+/*ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ*/
+
+'ISREDIT MACRO'
+
+/*------------------------------------------------------------*/
+/* get cursor position and line data.                         */
+/*------------------------------------------------------------*/
+'isredit (line, column) = cursor'
+'isredit (text)         = line .zcsr'
+'isredit (lrecl)        = lrecl'
+'isredit (cur_file)     = member'
+
+/*------------------------------------------------------------*/
+/* if cursor is not on a data line, then exit with a message. */
+/*------------------------------------------------------------*/
+if (column = 0) | (column > lrecl) then do
+   ZEDSMSG = "PUT CURSOR ON A DATA LINE"
+   ZEDLMSG = "THE NEXT OCCURRENCE OF THE GIVEN WORD WILL BE FOUND."
+   'ISPEXEC SETMSG MSG(ISRZ001)'
+   exit
+end
+
+
+/*------------------------------------------------------------*/
+/* get first previous text position.                          */
+/*------------------------------------------------------------*/
+TableYes = '_\-:.*?' || xrange('0','9') || xrange('A','Z') || xrange('a','z');
+TableNo  = translate(xrange(),,TableYes,' ')
+wordmask = translate(text,,TableNo, ' ');
+wordmask = translate(wordmask,,TableYes,'*');
+
+
+/*------------------------------------------------------------*/
+/* get the wordindex for the cursor position.                 */
+/*------------------------------------------------------------*/
+n  = 1;
+Wi = 0
+Wn = 0
+do FOREVER;
+   i = wordindex(wordmask,n);
+   if (i = 0)       then leave;
+   if (i <= column) then do
+      Wi = i;
+      Wn = n;
+      end;
+   else
+      leave;
+   n = n+1;
+end;
+
+
+/*------------------------------------------------------------*/
+/* if no word found, exit with a message.                     */
+/*------------------------------------------------------------*/
+if (Wi = 0) then do
+   ZEDSMSG = "PUT CURSOR ON FILE"
+   ZEDLMSG = "THE GIVEN FILE WILL BE EDITED."
+   'ISPEXEC SETMSG MSG(ISRZ001)'
+   exit
+end
+
+/*------------------------------------------------------------*/
+/* get word text.                                             */
+/*------------------------------------------------------------*/
+Wm = word(wordmask,Wn);
+WFile = substr(text,Wi,length(Wm));
+
+/*------------------------------------------------------------*/
+/* check to see if we need to add a default extension         */
+/*------------------------------------------------------------*/
+if (pos('.',WFile)==0) then do
+   WFile = WFile || ".CPY"
+end
+
+/*------------------------------------------------------------*/
+/* edit the file                                              */
+/*------------------------------------------------------------*/
+('ISREDIT EDIT ' || WFile )
+

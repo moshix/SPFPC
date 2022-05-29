@@ -1,0 +1,165 @@
+***********************************************************************
+
+FILE:     README.MAC
+
+PRODUCT:  SPF/PC
+
+VERSION:  4.0
+
+BY:       Command Technology Corporation
+
+CONTENTS: Additions, Revisions, and Information not in the SPF/PC User
+          Reference manual.
+
+***********************************************************************
+
+Under OS/2, SPF/PC supports the REXX macro language through its
+ISREDIT interface to IBM's OS/2 REXX.  Under DOS, SPFPC.EXE includes
+its own REXX implementation.
+
+If you are not familiar with REXX and the ISREDIT interface
+capabilities, please check chapter 12 in the SPF/PC documentation or
+in the IBM Extended Edition documentation describing REXX support.
+
+* ISREDIT Interface
+
+   ISREDIT commands are used exclusively by edit macros to manipulate
+   text inside the SPF/PC editor.  Macros may read text from the
+   editor, write text to the editor, and get statistics regarding the
+   editor status.  All of this information is processed via REXX,
+   which can treat the text involved as function variables, and
+   process it accordingly.
+
+* ISPEXEC Interface
+
+   ISPEXEC commands may be used in either edit macros or Dialog
+   Manager command procedures to manipulate DM Tables, Panels, and
+   Functions.  SPF/PC Version 4.0 supports a subset of the ISPF
+   ISPEXEC dialect, typically functions involving panel display,
+   variable pool manipulation and table services.
+
+* File Names Limitations
+
+  - Command Procedures should end with an .ISP extension.
+  - Edit Macros should end with a .SPF extension.
+  - Panels should end with .PAN.
+  - The base name ( XYZ in XYZ.PAN ) should not be longer than 8
+    characters for Panels, Macros, and Command Procedures.
+  - Spaces are not allowed in any of the names.
+  - All names are case insensitive.
+  - Other than the above rules, DOS and OS/2 file naming rules
+    apply for all macro, command proc, and panel names.
+
+* Sample Macros
+
+   Enclosed are some examples of SPF/PC macros -- they may prove to be
+   helpful when you are trying to code your own macros.
+
+   To execute these macros, type their name (without extension) in the
+   primary command line.  Some of the routines require that the cursor
+   is pointing at the text line intended for the operator, while
+   others operate on the entire file.  All of the macros are executed
+   once you type the <SPF-ENTER> key.
+
+      SOME OF THESE ENCLOSED MACROS ARE OS/2 SPECIFIC, IN THAT THEY
+      USE OS/2 SPECIFIC COMMAND LINE EXTENSIONS (LIKE "2>"
+      REDIRECTION).  TYPICALLY, THESE MACROS CAN BE MADE TO WORK IN
+      DOS BY CHANGING THE ADDRESS COMMAND THAT MAKES THE OS/2 SPECIFIC
+      CALL TO A SYNTAX SUPPORTED BY DOS.
+
+   Enclosed macros include:
+
+      RIGHTCOM.SPF   {Right Align comments in source file}
+      MATCH.SPF      {Find matching left/right expression marker}
+      COUNTSTR.SPF   {Count occurances of a string within current file}
+      COMPILE.SPF    {Perform C Compilation and Note Errors in Source}
+      DELWORD.SPF    {Deletes the word that the cursor sits on}
+      EDITFILE.SPF   {Edits whatever file the cursor is pointing at in text}
+      LCENTER.SPF    {Center current line}
+      PCENTER.SPF    {Center align a paragraph of text}
+      PJUSTIFY.SPF   {Justify a paragraph of text}
+      PRIGHT.SPF     {Right align a paragraph of text}
+      PLEFT.SPF      {Left align a paragraph of text}
+      MFCOMP.SPF     {Perform Micro Focus COBOL Compile and Import Errors}
+      NEXTWORD.SPF   {Jump to the next occurance of the word cursored}
+      REALCOMP.SPF   {Perform Realia COBOL Compile and Import Errors}
+      RECEIVE.SPF    {Frontend Comm Mngr Download Mainframe file in EDIT}
+      SEND.SPF       {Frontend Comm Mngr Upload -- Works with RECEIVE}
+      ENDSEND.SPF    {Frontend Comm Mngr Upload -- Works with ENDSEND}
+      ONLY.SPF       {Performs combined EXCLUDE ALL / FIND <string> ALL}
+      BOX.SPF        {Draws a double-lined box in current document}
+      BACKBOX.SPF    {Draws a background box in current document}
+
+   For additional information about each of the above macros, see the
+   header documentation in each file.
+
+* Sample Command Procedures
+
+   Enclosed are(is) example of SPF/PC command procedures -- they may
+   prove to be helpful when you are trying to code your own.
+
+   Enclosed command procedure(s) include:
+
+      PHONE.ISP      {Sample PHONE program -- utilizes Table Services}
+
+* Table Services
+
+  - Version 4.0 reads and writes its tables as raw ASCII comma
+    delimited output, with one field of header information
+    for storing key names, column names, and sort orders.
+
+    Therefore, you can port data from any standard PC database
+    software that supports exporting to comma delimited format
+    but exporting the file, and adding one record at the
+    beginning that contains:
+
+      KEYS(kfield1,kfield2)NAMES(cfield1,cfield2)
+
+  - Version 4.0 table services is not optimized for large tables.
+    It loads the entire table into memory at OPEN time, which
+    may take a long time.  However, once loaded, REXX should
+    be able to efficiently manage the table records with the
+    ISPEXEC table interface.
+
+  - Table sharing is intended to be used only within the same
+    instance of SPF -- not between different users or different
+    copies of SPF.  SPF/PC, when it loads a table, retrieves all
+    the data into memory from the file, and then closes the file.
+    If it makes any changes to the data, they are stored only
+    in memory until a TBWRITE or a TBCLOSE occurs.
+
+    If another user or instance of SPF opens the same table, they
+    too will read the data (at that given time) into memory,
+    make changes to it and write it back out -- potentially
+    overwriting your changes.
+
+  - In Version 4.0.0 and 4.0.1, extension variables are not supported.
+    The functions exist, get parsed and evaluated, but do not
+    do anything.  If you have an application the needs extension
+    variables, please contact our technical support department
+    and we will make sure that you get a release where they
+    are properly supported.
+
+* Panel Definition
+
+  - Unlike on the mainframe, ISPF panel sections for )ATTR, )INIT,
+    )REINIT, and )PROC allow multiple line spanning comments,
+    where a "/*" starts the comment and a "*/" terminates it
+    even if they are on seperate lines.
+
+    ISPF only supports single line comments.
+
+  - SPF/PC requires a )BODY section (with the )BODY designator)
+    for all panels.
+
+* Message Definition
+
+  - Unlike ISPF, SPF/PC requires that all message definitions be
+    defined in either SPFPC.MSG or SPFUSER.MSG file in the
+    PANELS directory.  The specified message ID does not specify
+    a seperate message definition file.
+
+  - Messages are read and parsed when SPF/PC starts up.  If a message
+    definition is changed after startup, it will not take effect
+    until SPF/PC is exited and reentered.
+

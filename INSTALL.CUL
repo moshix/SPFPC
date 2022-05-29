@@ -1,0 +1,67 @@
+     ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+     บ             Concurrent SPF/PC Version 4.0 Installation               บ
+     ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+
+  You have selected to install SPF/PC for Concurrent Use.  Since Concurrent
+  SPF/PC operates differently than the single user version, the following
+  considerations must be followed:
+
+|   - Concurrent SPF/PC must be installed on a network.
+
+      Once installed, Concurrent SPF/PC meters and enables a maximum
+      number of users to simultenously access the software.  For this
+      reason, it will not execute from a local drive.
+
+|   - Concurrent SPF/PC requires an Activation Key from CTC in order
+|     to be installed for Concurrent Use.
+
+      Once installed initially, Concurrent SPF/PC will allow concurrent
+      access to at most 1 user.  The Concurrent SPF/PC License administrator
+      at your site must call CTC to get the activation key that will
+      increase to your license quantity.
+
+
+
+
+  During the installation process, you are prompted for file system
+  information:
+
+|     Source Path
+
+  "Source Path" is the location SPF/PC is being installed from. For
+  example, if you are installing SPF/PC from your A: drive, you would
+  specify source path "A:\"
+
+|     Target Path
+
+  "Target Path" designates where you want Concurrent SPF/PC to reside
+  on your network server.  For example, if you want it to install on your
+  network Q: drive in directory SPFPC40, you would enter "Q:\SPFPC40".
+
+  Target Path is required to be a shared network drive.  Concurrent
+  SPF/PC will not execute if installed on your local hard drive.
+
+
+
+
+
+
+
+  Once the executables are copied to the network server drive, a special
+  Concurrent utility will prompt you for your Company Name and the
+  name of your special Technical Contact.
+
+|    Company Name
+
+  Entry of a Company Name is required, as it binds the name of your
+  site to your Concurrent SPF/PC Installation.  Once installed,
+  your Company Name will be displayed on Panel 0.C.
+
+|    Contact Name
+
+  Entry of a Contact is optional, but is strongly recommended. The
+  Contact name is displayed whenever a user encounters a network error,
+  exceeds the license maximum, or some other similar Concurrent use
+  problem.
+
+

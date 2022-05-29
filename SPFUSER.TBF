@@ -1,0 +1,10 @@
+KEYS(UAPPNAME)NAMES(UAPPDESC,UAPPPGM,UAPPPARM,UAPPWDIR)
+"CL","IBM C/2 with Symbols","CL.EXE","/Zi &ZDSN",,
+"IBMC2","IBM C/2 C Compiler","cl","-c &ZDSN",,
+"MAKE","Make Program","make.exe","&zdsn CV=N",,
+"MASM","IBM Macro Assembler","masm","&ZDSN",,
+"MFCOBOL","Micro Focus COBOL Compiler","cobol","&ZDSN",,
+"NETSEND","NET SEND command","NET.EXE","SEND",,
+"PKUNZIP","PKUNZIP -d <File>","PKUNZIP2.EXE","-d &ZDSN",,
+"REALCOB","Realia COBOL Compiler","REALCOB","&ZDSN",,
+"TOUCH","TOUCH Program - Give todays timestamp","TOUCH.EXE","&zdsn",,

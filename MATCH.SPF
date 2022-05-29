@@ -1,0 +1,133 @@
+/***********************************************************************
+ (c) Copyright 1992 Command Technology Corporation
+
+ MACRO:     MATCH
+ PURPOSE:   Find matching ()[]{}<> character
+ OPERATION: MATCH examines the character under the cursor at entry
+            and attempts to locate its logical twin. If successful,
+            the cursor is repositioned; otherwise it is left alone.
+
+***********************************************************************/
+
+'ISREDIT MACRO'
+
+delims = '([{<)]}>'
+npairs = length(delims)/2
+
+'ISREDIT (MAXLINES) = LINENUM .zlast'
+'ISREDIT (ROW,COL) = CURSOR'
+
+IF col > 0 THEN DO
+  'ISREDIT (LINE) = LINE (ROW)'
+  srcdlm = substr(line,col,1)
+  /* determine what the cursor points to */
+
+  idxdlm = pos(srcdlm, delims)
+  IF idxdlm \= 0 THEN DO
+    level = 0
+    IF idxdlm > npairs THEN
+      found = MatchLeft()
+    ELSE
+      found = MatchRight()
+    IF \found then
+      call dispmsg No matching delimiter found.
+  END
+  ELSE DO
+    call dispmsg srcdlm "is not a delimiter."
+  END
+END
+ELSE call disperr Cusor is not in file text.
+
+EXIT 0
+
+MatchRight:  /* Search forward for right delimiter */
+destdlm = substr(delims, idxdlm + npairs, 1)
+
+DO WHILE row<=MAXLINES
+  line = strip(line, "T")
+  linelen = length(line)
+
+  DO WHILE col <= linelen
+
+    char = substr(line,col,1)
+    IF char = srcdlm THEN
+      level = level + 1
+    ELSE DO
+      IF char = destdlm THEN DO
+        level = level - 1
+        IF level = 0 THEN DO
+          'ISREDIT CURSOR = (ROW) (COL)'
+          RETURN 1
+        END
+      END
+    END
+
+    nr      = pos(destdlm, line, col+1)
+    nl      = pos(srcdlm,  line, col+1)
+
+    IF nr=0 THEN
+      IF nl=0 THEN
+        col = linelen+1
+      else
+        col = nl
+    ELSE
+      IF nl=0 THEN
+        col = nr
+      ELSE
+        col = min(nr, nl)
+
+  END
+
+  /* read next line */
+  row = row + 1
+  col = 1
+  'ISREDIT (LINE) = LINE (ROW)'
+END
+RETURN 0
+
+MatchLeft:  /* Search backward for left delimiter */
+
+destdlm = substr(delims, idxdlm - npairs, 1)
+DO WHILE row>0
+
+  DO WHILE col > 0
+
+    char = substr(line,col,1)
+    IF char = srcdlm THEN
+      level = level + 1
+    ELSE DO
+      IF char = destdlm THEN DO
+        level = level - 1
+        IF level = 0 THEN DO
+          'ISREDIT CURSOR = (ROW) (COL)'
+          RETURN 1
+        END
+      END
+    END
+
+    nr      = lastpos(destdlm, line, col-1)
+    nl      = lastpos(srcdlm,  line, col-1)
+    col     = max(nr, nl)
+
+  END
+
+  /* read previous line */
+  row = row -1
+  'ISREDIT (LINE) = LINE (ROW)'
+  col = length(strip(line, "T"))
+END
+RETURN 0
+
+dispmsg:
+arg ZEDSMSG, ZEDLMSG
+
+  'ISPEXEC SETMSG MSG(ISRZ000)'
+
+return 0
+
+disperr:
+arg ZEDSMSG, ZEDLMSG
+
+  'ISPEXEC SETMSG MSG(ISRZ001)'
+
+return 0

@@ -1,0 +1,20 @@
+/* CENTER Macro */
+/*  (c) Copyright 1992 Command Technology Corporation */
+
+'isredit macro'
+'isredit (maxline) = data_width'
+'isredit (linenum, colnum) = cursor'
+call dispmsg maxline is max line
+
+'isredit (THELINE) = line 'linenum
+THELINE = center(strip(THELINE),maxline,' ')
+ 'isredit line' linenum ' = (THELINE)'
+ return 0
+
+dispmsg:
+arg ZEDSMSG, ZEDLMSG
+
+  'ISPEXEC SETMSG MSG(ISRZ001)'
+
+return 0
+

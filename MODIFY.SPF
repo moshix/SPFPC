@@ -1,0 +1,40 @@
+/*-------------------------------------------------*/
+/*(c) Copyright 1992 Command Technology Corporation*/
+/*                                                 */
+/* spf macro: modify                               */
+/*-------------------------------------------------*/
+'isredit macro'
+'isredit up max'
+'isredit seek c"Modifications:"'
+if rc = 0 then
+  do
+    'isredit (v1,v2) = cursor'
+    v1 = v1 + 1
+    'isredit cursor = 'v1 v2
+    purpose = ""
+    initials = ""
+    date = ""
+    do while purpose = "" | initials = "" | date = ""
+      if purpose = "" then
+        do
+          say 'Enter purpose of modification'
+          parse pull purpose
+        end
+      else
+        if initials = "" then
+          do
+            say 'Enter your initials'
+            pull initials  /* initials in caps */
+          end
+        else
+          if date = "" then
+            do
+              say "Enter today's date in MM/DD/YY format"
+              parse pull date
+            end
+    end
+    'isredit line_after .zcsr = dataline <1 "/*" 6 "'date'" 16 "'initials'" 21 "'purpose'" 71 "*/">'
+  end
+else
+  say 'Error: prolog not found, use prolog macro to create.'
+

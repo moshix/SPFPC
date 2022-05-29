@@ -1,0 +1,16 @@
+)ATTR
+  '#' TYPE(OUTPUT) INTENS(LOW)
+  '^' TYPE(INPUT) SCROLL(ON) CAPS(OFF) JUST(LEFT) INTENS(HIGH)
+)body
+%&ZPRODTSK /ฤ/ &ZTITLE /ฤ/ V &ZSHRTVER
+%COMMAND อออ^ZCMD / /%SCROLL อออ_Z   %
+%&ZCURDIR
+%    NAME     EXT    SIZE      DATE     TIME  ATTRS  PATH
+%/ฤ/
+)MODEL
+_Z +#Z       #Z   #CSIZE    #CDATE    #CTIME  #Z    #NAMEPATH
+)INIT
+&ZTDMARK = "        &ZDTFILES    &ZDTBYTES BYTES USED -- END OF FILE SELECTION LIST"
+.ZVARS = "SCROLL SEL NAMEBASE NAMEEXT CATTRIB"
+)END
+(C) Copyright 1984-1994, Command Technology Corporation.  All Rights Reserved.

@@ -1,0 +1,16 @@
+/*-----------------------------------------------------------------*/
+/* FILE:   SPFUSER.MSG                                             */
+/* USAGE:  SPF/PC VERSION 4.0 USER MESSAGE FILE.                   */
+/*                                                                 */
+/* NOTE:   This is the file that should be modified to add new     */
+/*         messages to your SPF/PC Version 4.0.                    */
+/*                                                                 */
+/*         User message id should not start with the prefixes      */
+/*         ISRE or ISPF, as these are the prefixes used for the    */
+/*         system messages.                                        */
+/*                                                                 */
+/*-----------------------------------------------------------------*/
+
+SMPL001 'SAMPLE MESSAGE' .ALARM=OFF
+'THIS IS A SAMPLE LONG MESSAGE'
+

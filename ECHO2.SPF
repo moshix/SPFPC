@@ -1,0 +1,3 @@
+/* */
+'isredit macro(test1 test2)'
+say test1 test2

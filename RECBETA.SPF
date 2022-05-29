@@ -1,0 +1,94 @@
+/* RECEIVE.SPF -- Performs download of dataset from mainframe
+ (c) Copyright 1992 Command Technology Corporation
+
+                using OS/2 EE Communications Manager calls, RECEIVE.
+ ______________________________________________________________________
+
+ Upgraded for use with both IBM VM and MVS mainframe systems using
+ IBM OS/2 2.0 REXX REXXUTIL functions.
+                Bruce E. H”gman, (Compuserve 72050,1327)
+                Sr. Systems Engineer, EDS Corporation, Washington DC
+ Related .SPF macros also upgraded:  ENDSEND, RECEIVE.
+ New REXX:  SAVEMFOS.CMD
+ Use of the upgraded .SPF macros and REXX requires:
+ (1)  OS/2 2.0 (The REXX functions do not work with previous OS/2)
+ (2)  Installed REXX (You must have installed OS/2 with REXX)
+ (3)  REXX20 fix or OS/2 2.1á.  The REXX20 fixes are available on
+      Compuserve IBMOS2 forum.
+ ______________________________________________________________________
+
+
+VM  Usage:      RECEIVE filename filetype filemode
+
+MVS Usage:      RECEIVE filename
+
+   It Performs: RECEIVE will COPY the specified file to the end of
+                whatever file you are currently editing.  If you simply
+                want to edit the Mainframe dataset by itself (you don't
+                want it appended to), open up an empty file and perform
+                RECEIVE into it.
+
+   For example: If you want to simply download the file
+
+                   TESTFILE TEMP A
+
+                from your mainframe, edit it, and reupload it upon
+                completion, you would execute the following sequence of
+                commands:
+
+                In SPF/PC:
+
+                   EDIT TESTFILE.TMP           {or any empty file}
+                   RECEIVE TESTFILE TEMP A
+
+                This will perform the download of the TESTFILE TEMP A
+                dataset and copy it into the currently open edit session
+                (at the end, if there is some text already there).  It
+                also sets the PFF3 key to invoke the SEND function, so
+                if you change the edit session, and hit F3, it will
+                automatically upload the dataset back up to the
+                mainframe.
+*/
+
+'isredit macro()'
+MF_FileName=''; MF_FileType='';
+arg MF_FileName MF_FileType
+
+if 0 < RxFuncQuery('SysLoadFuncs') THEN DO;
+   Call rxfuncadd 'SysLoadFuncs','REXXUTIL','SysLoadFuncs';
+   Call SysLoadFuncs;
+END;
+MF_OS_Type=''; MF_OS_Type=SysIni(,'SPF','MFOSTYPE');
+if MF_OS_Type='' | MF_OS_Type='ERROR:' then do;
+   address cmd 'call SAVEMFOS';
+   MF_OS_Type=SysIni(,'SPF','MFOSTYPE');
+end;
+if (MF_OS_Type='MVS') then do; MF_FileType=''; pparen=''; end;
+else pparen="(";
+
+rc=SysFileDelete('temp.$$2');
+if ((MF_FileType\="" & MF_OS_Type\='MVS') | MF_OS_Type='MVS') then do;
+   /* download the file into OS/2 file TEMP.$$$ */
+   address cmd 'RECEIVE temp.$$$ 'MF_FileName MF_FileType pparen'CRLF ASCII'
+   if (rc=0) then do;
+      'isredit (LINES) = linenum .zlast'
+      if (LINES>0) then   'isredit copy temp.$$$ after .zlast'
+      else                'isredit copy temp.$$$'
+      'ispexec vget ZPF03'
+      ZLAST_F3 = ZPF03
+      ZPF03    = "ENDSEND "MF_FileName" "MF_FileType
+      'ispexec vput ZPF03 ZLAST_F3'
+   end;
+   else do;
+      ZEDSMSG =  "Error during RECEIVE."
+      'ispexec vput ZEDSMSG'
+      'ispexec setmsg msg(ISRZ001)'
+   end;
+end;
+else do;
+  if (MF_OS_Type='MVS') then  ZEDSMSG =  "Usage: RECEIVE <filename>"
+  else ZEDSMSG =  "Usage: RECEIVE <filename> [<filetype> [filemode]]"
+  'ispexec vput ZEDSMSG'
+  'ISPEXEC SETMSG MSG(ISRZ001)'
+end;
+return 0;

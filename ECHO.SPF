@@ -1,0 +1,4 @@
+/* */
+'isredit macro'
+parse arg test1 test2
+say test1 test2
