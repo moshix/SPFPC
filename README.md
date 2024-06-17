@@ -11,5 +11,5 @@ It works fine and is fun to use on DOSBOX. To execute panels commands (e.g. for 
 
 This software is as-is. I don't support it, nor will I look at tickets. You're on your own.
 
-October 2023, New York
+June 2024, Tokyo
 
